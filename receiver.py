@@ -130,7 +130,7 @@ class rosPublisher:
         else:
             stall = 2
             data["throttle"] = abs(data["throttle"]*50/1000)
-        data["steer"] = (data["steer"]+1000)/2000*18000
+        data["steer"] = ((data["steer"]+1000)/2000)*1800
         throttle = int(data["throttle"])
         steer = int(data["steer"])
         data = {"throttle":throttle,"steer":steer,"stall":stall}
@@ -152,8 +152,9 @@ if __name__ == "__main__":
         try:
             data = receiver.rosQueue.get(block=False,timeout=0.1)
             data = publisher.convert(data)
-            publisher.publish(data)
             print(data)
+            publisher.publish(data)
+            
         except queue.Empty:
             pass
         rate.sleep()
