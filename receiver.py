@@ -130,7 +130,7 @@ class rosPublisher:
         else:
             stall = 2
             data["throttle"] = abs(data["throttle"]*50/1000)
-        data["steer"] = data["steer"]*18000/1000+9000
+        data["steer"] = (data["steer"]+1000)/2000*18000
         throttle = int(data["throttle"])
         steer = int(data["steer"])
         data = {"throttle":throttle,"steer":steer,"stall":stall}
