@@ -1,3 +1,4 @@
 */*.pyc
 __pycache__/*
 test.py
+__pycache__/emiter_controller.cpython-310.pyc
