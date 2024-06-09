@@ -114,6 +114,7 @@ class rosPublisher:
         '''
         if data is None:
             #data = self.attenuate(self.lastData,self.count)
+            data = {"throttle":0,"steer":0,"stall":1}
             self.count+=1
         elif data["throttle"] < -1000 or data["throttle"] > 1000:
             #data = self.attenuate(self.lastData,self.count)
@@ -131,7 +132,7 @@ class rosPublisher:
             stall = 2
             data["throttle"] = abs(data["throttle"]*50/1000)
 
-        data["steer"] = ((data["steer"]+1000)/2000)*1800
+        data["steer"] = ((data["steer"]+1000)/2000)*18000
         throttle = int(data["throttle"])
         steer = int(data["steer"])
         data = {"throttle":throttle,"steer":steer,"stall":stall}
