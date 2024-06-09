@@ -138,7 +138,6 @@ class rosPublisher:
         return data
     
     def publish(self,data):
-        data = self.convert(data)
         self.stallPublisher.publish(data["stall"])
         self.throttlePublisher.publish(data["throttle"])
         self.steerPublisher.publish(data["steer"])
