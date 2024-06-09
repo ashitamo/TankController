@@ -8,7 +8,7 @@ import math
 from std_msgs.msg import String,Int8,Int16
 
 
-HOST = "10.22.233.150"
+HOST = "10.147.18.60"
 PORT = 65432
 
 class Receiver(threading.Thread):
