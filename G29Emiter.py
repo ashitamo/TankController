@@ -105,7 +105,9 @@ if __name__ == '__main__':
             stall = 2
         if int(temp["Steering Wheel Button Right"]) == 1:
             stall = 1
-        throttle = float(temp["Right Pedal"])*1000
+        throttle = -float(temp["Right Pedal"]-1)/2*1000
+        if stall == 2:
+            throttle = -throttle
         steer = -float(temp["Steering Wheel"])*1000
         data = {"throttle":int(throttle),"steer":int(steer)}
         print(data)
