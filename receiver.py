@@ -45,7 +45,7 @@ class Receiver(threading.Thread):
     def recive(self):
         self.socket.settimeout(0.15)
         try:
-            data = self.socket.recv(38)
+            data = self.socket.recv(40)
         except TimeoutError:
             return None
         except BaseException as e:
@@ -86,29 +86,53 @@ class rosPublisher:
         self.count = 0
 
     def attenuate(self,data,count):
+        '''
+            斷訊時方向盤自動回正
+        '''
         attData = {"throttle":0,"steer":9000,"stall":1}
         if data is None:
             return attData
         throttle = data["throttle"]
         steer = data["steer"]
-
         steer = int((steer-9000)*math.exp(-count/2))+9000
         attData["steer"] = steer
-        attData["stall"] = data["steer"]
+        attData["stall"] = data["stall"]
         return attData
     def convert(self,data):
+        '''
+            轉換訊號用
+
+            輸入資料格式
+            throttle: -1000~1000
+            steer: -1000~1000
+            stall: 1 2 4 8
+
+            輸出資料格式
+            throttle: 0~30(stall = 1) 0~50(stall = 2)
+            steer: 0 ~ 18000
+            stall: 1 2 4 8
+        '''
         if data is None:
+            data = self.attenuate(self.lastData,self.count)
+            self.count+=1
+        elif data["throttle"] < -1000 or data["throttle"] > 1000:
+            data = self.attenuate(self.lastData,self.count)
+            self.count+=1
+        elif data["steer"] < -1000 or data["steer"] > 1000:
             data = self.attenuate(self.lastData,self.count)
             self.count+=1
         else:
             self.count = 0
+
+        if data["throttle"] >= 0:
+            stall = 1
+            data["throttle"] = abs(data["throttle"]*30/1000)
+        else:
+            stall = 2
+            data["throttle"] = abs(data["throttle"]*50/1000)
+        data["steer"] = data["steer"]*18000/1000+9000
         throttle = int(data["throttle"])
         steer = int(data["steer"])
-        if throttle >= 0:
-            stall = 1
-        else:
-            throttle = abs(throttle)
-            stall = 2
         data = {"throttle":throttle,"steer":steer,"stall":stall}
         self.lastData = data
         return data
