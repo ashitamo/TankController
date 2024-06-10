@@ -29,7 +29,7 @@ def main(source):
         if not in_bytes:
             break
         in_frame = np.frombuffer(in_bytes, np.uint8).reshape([height, width, 3])
-        in_frame = cv2.resize(in_frame, None, fx=0.5, fy=0.5)   # 改变图片尺寸
+        in_frame = cv2.resize(in_frame, None, fx=2, fy=2)   # 改变图片尺寸
         frame = cv2.cvtColor(in_frame, cv2.COLOR_RGB2BGR)  # 转成BGR
         cv2.imshow("ffmpeg", frame)
         if cv2.waitKey(1) == ord('q'):

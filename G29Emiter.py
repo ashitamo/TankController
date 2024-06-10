@@ -109,6 +109,8 @@ if __name__ == '__main__':
         if stall == 2:
             throttle = -throttle
         steer = -float(temp["Steering Wheel"])*1000
+        if abs(steer) < 11.2: #死區 小於兩度為零
+            steer = 0
         data = {"throttle":int(throttle),"steer":int(steer)}
         print(data)
         try:

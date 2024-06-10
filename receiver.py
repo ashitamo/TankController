@@ -85,18 +85,20 @@ class rosPublisher:
         self.lastData = None
         self.count = 0
 
-    def attenuate(self,data,count):
+    def attenuate(self,count):
         '''
             斷訊時方向盤自動回正
+            檔位保持上一個檔位
+            油門歸零
         '''
-        attData = {"throttle":0,"steer":9000,"stall":1}
-        if data is None:
+        attData = {"throttle":0,"steer":0,"stall":1}
+        if self.lastData is None:
             return attData
-        throttle = data["throttle"]
-        steer = data["steer"]
-        steer = int((steer-9000)*math.exp(-count/2))+9000
+        
+        attData["stall"] = self.lastData["stall"]
+        steer = self.lastData["steer"]
+        steer = int((steer)*math.exp(-count/2))
         attData["steer"] = steer
-        attData["stall"] = data["stall"]
         return attData
     def convert(self,data):
         '''
@@ -108,19 +110,13 @@ class rosPublisher:
             stall: 1 2 4 8
 
             輸出資料格式
-            throttle: 0~30(stall = 1) 0~50(stall = 2)
+            throttle: 0~30(stall = 1) 0~60(stall = 2)
             steer: 0 ~ 18000
             stall: 1 2 4 8
         '''
         if data is None:
-            #data = self.attenuate(self.lastData,self.count)
+            data = self.attenuate(self.lastData,self.count)
             data = {"throttle":0,"steer":0,"stall":1}
-            self.count+=1
-        elif data["throttle"] < -1000 or data["throttle"] > 1000:
-            #data = self.attenuate(self.lastData,self.count)
-            self.count+=1
-        elif data["steer"] < -1000 or data["steer"] > 1000:
-            #data = self.attenuate(self.lastData,self.count)
             self.count+=1
         else:
             self.count = 0
@@ -130,7 +126,7 @@ class rosPublisher:
             data["throttle"] = abs(data["throttle"]*30/1000)
         else:
             stall = 2
-            data["throttle"] = abs(data["throttle"]*50/1000)
+            data["throttle"] = abs(data["throttle"]*60/1000)
 
         data["steer"] = ((data["steer"]+1000)/2000)*18000
         throttle = int(data["throttle"])
@@ -153,10 +149,9 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         try:
             data = receiver.rosQueue.get(block=False,timeout=0.1)
-            data = publisher.convert(data)
-            print(data)
-            publisher.publish(data)
-            
         except queue.Empty:
-            pass
+            data = None
+        data = publisher.convert(data)
+        print(data)
+        publisher.publish(data)
         rate.sleep()
