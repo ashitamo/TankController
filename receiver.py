@@ -123,12 +123,13 @@ class rosPublisher:
             self.count = 0
 
         if data["throttle"] > 0:
-            stall = 1
+            data["stall"] = 1
             data["throttle"] = abs(data["throttle"]*30/1000)
         elif data["throttle"] < 0:
-            stall = 2
+            data["stall"] = 2
             data["throttle"] = abs(data["throttle"]*60/1000)
 
+        stall = data["stall"]
         data["steer"] = ((data["steer"]+1000)/2000)*18000
         throttle = int(data["throttle"])
         steer = int(data["steer"])
