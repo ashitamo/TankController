@@ -117,7 +117,7 @@ class rosPublisher:
         '''
         if data is None:
             data = self.attenuate(self.count)
-            data = {"throttle":0,"steer":0,"stall":1}
+            #data = {"throttle":0,"steer":0,"stall":1}
             self.count+=1
         else:
             self.count = 0
