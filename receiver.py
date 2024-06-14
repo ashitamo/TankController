@@ -122,7 +122,7 @@ class rosPublisher:
         else:
             self.count = 0
 
-        if data["throttle"] > 0:
+        if data["throttle"] >= 0:
             stall = 1
             data["throttle"] = abs(data["throttle"]*30/1000)
         elif data["throttle"] < 0:
