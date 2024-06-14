@@ -99,6 +99,7 @@ class rosPublisher:
         steer = self.lastData["steer"]
         steer = int((steer)*math.exp(-count/2))
         attData["steer"] = steer
+        attData["stall"] = self.lastData["stall"]
         return attData
     def convert(self,data):
         '''
@@ -115,16 +116,16 @@ class rosPublisher:
             stall: 1 2 4 8
         '''
         if data is None:
-            data = self.attenuate(self.lastData,self.count)
+            data = self.attenuate(self.count)
             data = {"throttle":0,"steer":0,"stall":1}
             self.count+=1
         else:
             self.count = 0
 
-        if data["throttle"] >= 0:
+        if data["throttle"] > 0:
             stall = 1
             data["throttle"] = abs(data["throttle"]*30/1000)
-        else:
+        elif data["throttle"] < 0:
             stall = 2
             data["throttle"] = abs(data["throttle"]*60/1000)
 
