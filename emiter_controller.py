@@ -9,7 +9,7 @@ import random
 
 HOST = "10.147.18.60"
 #HOST = "10.22.233.150"
-HOST = "127.0.0.1"
+#HOST = "127.0.0.1"
 PORT = 65432
 
 "-vcodec libx265 -crf 18"
