@@ -5,10 +5,11 @@ import json
 import queue
 import serial
 from pynput import keyboard
+import random
 
 HOST = "10.147.18.60"
 #HOST = "10.22.233.150"
-#HOST = "127.0.0.1"
+HOST = "127.0.0.1"
 PORT = 65432
 
 "-vcodec libx265 -crf 18"
@@ -145,6 +146,8 @@ if __name__ == '__main__':
         print(data)
         if data is not None:
             try:
+                # if random.random() > 0.90:
+                #     data = ''
                 emiter.emitQueue.put(data, False,0.01)
             except queue.Full:
                 pass
