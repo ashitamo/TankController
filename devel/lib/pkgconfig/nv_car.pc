@@ -1,0 +1,8 @@
+prefix=/home/baconsu/project/TankController/devel
+
+Name: nv_car
+Description: Description of nv_car
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

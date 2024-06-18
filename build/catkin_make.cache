@@ -1,0 +1,2 @@
+nv_car:rospy
+-DCATKIN_DEVEL_PREFIX=/home/baconsu/project/TankController/devel -DCMAKE_INSTALL_PREFIX=/home/baconsu/project/TankController/install -G Unix Makefiles
