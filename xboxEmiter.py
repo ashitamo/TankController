@@ -28,7 +28,7 @@ print(joystick.get_name())
 # (-1,-1) (0,-1) (1,-1)
 
 keyDict = {'Steering Wheel':0,
-            'Right Pedal':1,
+            'Right Pedal':-1,
             'Middle Pedal':1,
             'Left Pedal':1,
             'Cross':0,
