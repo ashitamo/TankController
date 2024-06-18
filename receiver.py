@@ -87,10 +87,9 @@ class rosPublisher:
 
     def attenuate(self,count):
         '''
-            輸入資料格式,輸出資料格式
+            輸出資料格式
             throttle: -1000~1000
             steer: -1000~1000
-            stall: 1 2 4 8
 
             斷訊時方向盤自動回正
             檔位保持上一個檔位
@@ -119,8 +118,8 @@ class rosPublisher:
             stall: 1 2 4 8
 
             輸出資料格式
-            throttle: 0~30(stall = 1) 0~60(stall = 2)
-            steer: 0 ~ 18000
+            throttle: 0~40(stall = 1) 0~60(stall = 2)
+            steer: 1500~14500
             stall: 1 2 4 8
         '''
         if data is None:
@@ -133,12 +132,12 @@ class rosPublisher:
 
         if data["throttle"] >= 0:
             stall = 1
-            data["throttle"] = abs(data["throttle"]*30/1000)
+            data["throttle"] = abs(data["throttle"]*40/1000)
         elif data["throttle"] < 0:
             stall= 2
             data["throttle"] = abs(data["throttle"]*60/1000)
         
-        data["steer"] = ((data["steer"]+1000)/2000)*18000
+        data["steer"] = ((data["steer"]+1000)/2000)*13000+1500
         throttle = int(data["throttle"])
         steer = int(data["steer"])
         data = {"throttle":throttle,"steer":steer,"stall":stall}
