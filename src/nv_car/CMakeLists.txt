@@ -105,7 +105,9 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-catkin_install_python(PROGRAMS scripts/receiver.py
+# adding new scripts at here
+
+catkin_install_python(PROGRAMS scripts/pub_receiver.py scripts/sub_stall.py scripts/sub_steer.py scripts/sub_throttle.py
  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

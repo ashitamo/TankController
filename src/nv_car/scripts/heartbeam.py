@@ -17,7 +17,7 @@ class Heartbeam():
         self.initRos()
 
     def initRos(self):
-        rospy.init_node('heartbeam_node', anonymous=True)
+        rospy.init_node('heartbeam_node')
         self.rate = rospy.Rate(10)
 
     def run(self):

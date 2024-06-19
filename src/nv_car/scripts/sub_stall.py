@@ -17,7 +17,7 @@ class Stall:
         self.initRos()
 
     def initRos(self):
-        rospy.init_node('stall_node', anonymous=True)
+        rospy.init_node('stall_node')
         self.rate = rospy.Rate(10)
         rospy.Subscriber("/stall", Int8, self.callback)
 

@@ -144,7 +144,7 @@ class rosPublisher:
 if __name__ == "__main__":
     receiver = Receiver()
     receiver.start()
-    rospy.init_node('receiver_node', anonymous=True)
+    rospy.init_node('receiver_node')
     rate = rospy.Rate(10)
     publisher = rosPublisher()
     while not rospy.is_shutdown():
@@ -153,6 +153,5 @@ if __name__ == "__main__":
         except queue.Empty:
             data = None
         data = publisher.convert(data)
-        print(data)
         publisher.publish(data)
         rate.sleep()

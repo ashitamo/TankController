@@ -4,40 +4,42 @@ from std_msgs.msg import String,Int8,Int16
 import threading
 
 
-class Throttle:
+class Steer():
     bus = None
     def __init__(self):
-        super(Throttle, self).__init__()
+        super(Steer, self).__init__()
         self.daemon = True
         bustype = 'socketcan'
         channel = 'can0'
-        self._throttle = 0
-        self.cid = 0x075
+        self._steer = 9000
+        self.cid = 0x065
         # self.bus = can.Bus(interface=bustype, channel=channel, receive_own_messages=True)
         self.initRos()
 
     def initRos(self):
-        rospy.init_node('throttle_node', anonymous=True)
-        rospy.Subscriber("/throttle", Int8, self.callback)
+        rospy.init_node('steer_node')
+        self.rate = rospy.Rate(10)
+        rospy.Subscriber("/steer", Int16, self.callback)
 
     def callback(self,data):
-        
-        if data.data>=0 and data.data<50:
-            self._throttle = data.data
-        rospy.loginfo(rospy.get_caller_id() + "throttle %s", self._throttle)
+        rospy.loginfo(rospy.get_caller_id() + "steer %s", data.data)
+        if data.data>=0 and data.data<=18000:
+            self._steer = data.data
 
     def run(self):
-        rate = rospy.Rate(10)
         while not rospy.is_shutdown():
-            data = [self._throttle, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80]
+            valLowByte = self._steer & 0xFF
+            valHighByte = (self._steer >> 8) & 0xFF
+            data = [valLowByte, valHighByte, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80]
             # msg = can.Message(arbitration_id=self.cid, data=data, is_extended_id=False)
             # if self.bus is not None:
                 # self.bus.send(msg,timeout=0.15)
-            rate.sleep()
+            self.rate.sleep()
 
 if __name__ == '__main__':
     try:
-        throttle = Throttle()
-        throttle.run()
+        steer = Steer()
+        steer.run()
+        rospy.spin()
     except rospy.ROSInterruptException:
         pass

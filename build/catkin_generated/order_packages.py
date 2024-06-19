@@ -2,4 +2,4 @@
 source_root_dir = '/home/baconsu/project/TankController/src'
 whitelisted_packages = ''.split(';') if '' != '' else []
 blacklisted_packages = ''.split(';') if '' != '' else []
-underlay_workspaces = '/home/baconsu/project/TankController/devel;/opt/ros/noetic'.split(';') if '/home/baconsu/project/TankController/devel;/opt/ros/noetic' != '' else []
+underlay_workspaces = '/opt/ros/noetic'.split(';') if '/opt/ros/noetic' != '' else []

@@ -53,6 +53,18 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nv_car" TYPE PROGRAM FILES "/home/baconsu/project/TankController/build/nv_car/catkin_generated/installspace/receiver.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nv_car" TYPE PROGRAM FILES "/home/baconsu/project/TankController/build/nv_car/catkin_generated/installspace/pub_receiver.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nv_car" TYPE PROGRAM FILES "/home/baconsu/project/TankController/build/nv_car/catkin_generated/installspace/sub_stall.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nv_car" TYPE PROGRAM FILES "/home/baconsu/project/TankController/build/nv_car/catkin_generated/installspace/sub_steer.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/nv_car" TYPE PROGRAM FILES "/home/baconsu/project/TankController/build/nv_car/catkin_generated/installspace/sub_throttle.py")
 endif()
 

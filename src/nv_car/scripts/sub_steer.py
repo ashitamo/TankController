@@ -17,7 +17,7 @@ class Steer():
         self.initRos()
 
     def initRos(self):
-        rospy.init_node('steer_node', anonymous=True)
+        rospy.init_node('steer_node')
         self.rate = rospy.Rate(10)
         rospy.Subscriber("/steer", Int16, self.callback)
 
