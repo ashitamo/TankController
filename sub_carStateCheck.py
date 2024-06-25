@@ -45,11 +45,11 @@ class CarStateChecker_Recv:
     def respond(self):
         self.socket.settimeout(0.15)
         try:
-            data = self.socket.recv(50)
+            data = self.socket.recv(29)
         except TimeoutError:
             return None
         except BaseException as e:
-            #print(e)
+            print(e)
             if "WinError 10054" in str(e):
                 self.socket = None
             return None
