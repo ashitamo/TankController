@@ -3,6 +3,7 @@
     <node pkg="nv_car" type="sub_stall.py" name="stall_node" output="screen"></node>
     <node pkg="nv_car" type="sub_steer.py" name="steer_node" output="screen"></node>
     <node pkg="nv_car" type="sub_throttle.py" name="throttle_node" output="screen"></node>
+    <env name="PYTHONPATH" value=""></env>
 </launch>
 
 <!-- need to chmod +x file.py needed to launch -->
