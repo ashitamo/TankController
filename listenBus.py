@@ -6,9 +6,30 @@ if __name__ == '__main__':
     bustype = 'socketcan'
     channel = 'can0'
     bus = can.Bus(interface=bustype, channel=channel, receive_own_messages=False)
+    with open('data.txt', 'a', newline='') as fw:
+        while True:
+            msg = bus.recv()
+            if msg.arbitration_id == 0x0363:
+                print("363: ",file=fw)
+                print("vsp",msg.data[0]+msg.data[1]*256,file=fw)
+                print(bin(msg.data[6]),file=fw)
 
-    while True:
-        msg = bus.recv()
-        if msg.arbitration_id == 0x050:
-            print( msg.data[0] )
-            #print(bin(msg.data[0]))
+
+            elif msg.arbitration_id == 0x0A3:
+                print("A3: ",file=fw)
+                print("stall",msg.data[0],file=fw)
+
+            elif msg.arbitration_id == 0x067:
+                print("67: ",file=fw)
+                print("EPS Voltage",msg.data[1]/100*12)
+                print("Steer ang",msg.data[2]+msg.data[3]*256,file=fw)
+                print("Steer torque",msg.data[4]+msg.data[5]*256,file=fw)
+                print("Steer speed",msg.data[6]+msg.data[7]*256,file=fw)
+            elif msg.arbitration_id == 0x167:
+                print("167: ",file=fw)
+                print("EPS assist",bin(msg.data[3]),file=fw)
+                print("EPS status",bin(msg.data[7]),file=fw)
+            elif msg.arbitration_id == 0x267:
+                print("101: ",file=fw)
+                print(msg.data,file=fw)
+
