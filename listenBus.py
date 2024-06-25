@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
             elif msg.arbitration_id == 0x067:
                 print("67: ",file=fw)
-                print("\tEPS Voltage",msg.data[1]/100*12)
+                print("\tEPS Voltage",msg.data[1]/100*12,file=fw)
                 print("\tSteer ang",msg.data[2]+msg.data[3]*256,file=fw)
                 print("\tSteer torque",msg.data[4]+msg.data[5]*256,file=fw)
                 print("\tSteer speed",msg.data[6]+msg.data[7]*256,file=fw)
