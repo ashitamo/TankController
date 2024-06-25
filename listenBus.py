@@ -9,4 +9,5 @@ if __name__ == '__main__':
 
     while True:
         msg = bus.recv()
-        print(msg)
+        if msg.arbitration_id == 0x363:
+            print(msg.data[0]+msg.data[1]*256)
