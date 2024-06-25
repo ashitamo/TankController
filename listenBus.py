@@ -12,12 +12,14 @@ if __name__ == '__main__':
             if msg.arbitration_id == 0x0363:
                 print("363: ",file=fw)
                 print("\tvsp",msg.data[0]+msg.data[1]*256,file=fw)
-                print(bin(msg.data[6]),file=fw)
+                print("\tvcu1",bin(msg.data[4]),file=fw)
+                print("\tvcu2",bin(msg.data[5]),file=fw)
+                print("\tsign",bin(msg.data[6]),file=fw)
 
 
             elif msg.arbitration_id == 0x0A3:
                 print("A3: ",file=fw)
-                print("stall",msg.data[0],file=fw)
+                print("\tstall",msg.data[0],file=fw)
 
             elif msg.arbitration_id == 0x067:
                 print("67: ",file=fw)
@@ -31,9 +33,9 @@ if __name__ == '__main__':
                 print("\tEPS status",bin(msg.data[7]),file=fw)
             elif msg.arbitration_id == 0x267:
                 print("267: ",file=fw)
-                print("steer centeral position",msg.data[0]+msg.data[1]*256,file=fw)
-                print("steer left position",msg.data[2]+msg.data[3]*256,file=fw)
-                print("steer right position",msg.data[4]+msg.data[5]*256,file=fw)
+                print("\tsteer centeral position",msg.data[0]+msg.data[1]*256,file=fw)
+                print("\tsteer left position",msg.data[2]+msg.data[3]*256,file=fw)
+                print("\tsteer right position",msg.data[4]+msg.data[5]*256,file=fw)
             elif msg.arbitration_id == 0x101:
                 print("101: ",file=fw)
                 print("\tright speed",msg.data[0]+msg.data[1]*256+msg.data[2]*256*256+msg.data[3]*256*256*256,file=fw)
