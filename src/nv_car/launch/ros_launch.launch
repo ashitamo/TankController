@@ -1,9 +1,10 @@
 <launch>
+    <node pkg="nv_car" type="heartbeam.py" name="heartbeam_node" output="screen"></node>
     <node pkg="nv_car" type="pub_receiver.py" name="receiver_node" output="screen"></node>
     <node pkg="nv_car" type="sub_stall.py" name="stall_node" output="screen"></node>
     <node pkg="nv_car" type="sub_steer.py" name="steer_node" output="screen"></node>
     <node pkg="nv_car" type="sub_throttle.py" name="throttle_node" output="screen"></node>
-    <env name="PYTHONPATH" value=""></env>
+    <env name="PYTHONPATH" value="/usr/bin/python3"></env>
 </launch>
 
 <!-- need to chmod +x file.py needed to launch -->
