@@ -1,4 +1,4 @@
-#! /usr/bin/pythpn3
+#! /usr/bin/python3
 
 import rospy
 from std_msgs.msg import String,Int8,Int16
