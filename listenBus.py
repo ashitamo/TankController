@@ -30,7 +30,15 @@ if __name__ == '__main__':
                 print("\tEPS assist",bin(msg.data[3]),file=fw)
                 print("\tEPS status",bin(msg.data[7]),file=fw)
             elif msg.arbitration_id == 0x267:
+                print("267: ",file=fw)
+                print("steer centeral position",msg.data[0]+msg.data[1]*256,file=fw)
+                print("steer left position",msg.data[2]+msg.data[3]*256,file=fw)
+                print("steer right position",msg.data[4]+msg.data[5]*256,file=fw)
+            elif msg.arbitration_id == 0x101:
                 print("101: ",file=fw)
                 print("\tright speed",msg.data[0]+msg.data[1]*256+msg.data[2]*256*256+msg.data[3]*256*256*256,file=fw)
                 print("\tleft speed",msg.data[4]+msg.data[5]*256+msg.data[6]*256*256+msg.data[7]*256*256*256,file=fw)
+            else:
+                print(msg)
+            
 
