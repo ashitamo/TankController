@@ -9,7 +9,7 @@ from std_msgs.msg import String,Int8,Int16
 
 HOST = "127.0.0.1"
 #HOST = "10.147.18.60"
-HOST = "10.22.233.150"
+#HOST = "10.22.233.150"
 PORT = 65432
 
 class Receiver(threading.Thread):
@@ -138,7 +138,7 @@ class rosPublisher:
             stall= 2
             data["throttle"] = abs(data["throttle"]*60/1000)
         
-        data["steer"] = ((data["steer"]+1000)/2000)*10000+4000
+        data["steer"] = ((data["steer"]+1000)/2000)*1000+8500
         throttle = int(data["throttle"])
         steer = int(data["steer"])
         data = {"throttle":throttle,"steer":steer,"stall":stall}

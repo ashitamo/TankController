@@ -107,40 +107,40 @@ if __name__ == '__main__':
     emiter.start()  
     while True:
         if currently_pressed == W:
-            data = json.dumps({"throttle":30,"steer":9000}).encode("utf-8")
+            data = json.dumps({"throttle":1000,"steer":1000}).encode("utf-8")
 
             print('w')
         elif currently_pressed == S:
-            data = json.dumps({"throttle":-59,"steer":9000}).encode("utf-8")
+            data = json.dumps({"throttle":-1000,"steer":0}).encode("utf-8")
 
             print('s')
         elif currently_pressed == A:
-            data = json.dumps({"throttle":0,"steer":12000}).encode("utf-8")
+            data = json.dumps({"throttle":0,"steer":1000}).encode("utf-8")
 
             print('a')
         elif currently_pressed == D:
-            data = json.dumps({"throttle":0,"steer":6000}).encode("utf-8")
+            data = json.dumps({"throttle":0,"steer":-1000}).encode("utf-8")
 
             print('d')
         elif currently_pressed == WD:
-            data = json.dumps({"throttle":30,"steer":6000}).encode("utf-8")
+            data = json.dumps({"throttle":1000,"steer":-1000}).encode("utf-8")
 
             print('wd')
         elif currently_pressed == WA:
-            data = json.dumps({"throttle":30,"steer":12000}).encode("utf-8")
+            data = json.dumps({"throttle":1000,"steer":1000}).encode("utf-8")
 
             print('wa')
         elif currently_pressed == SD:
-            data = json.dumps({"throttle":-59,"steer":6000}).encode("utf-8")
+            data = json.dumps({"throttle":-1000,"steer":-1000}).encode("utf-8")
 
             print('sd')
         elif currently_pressed == SA:
-            data = json.dumps({"throttle":-59,"steer":12000}).encode("utf-8")
+            data = json.dumps({"throttle":-1000,"steer":1000}).encode("utf-8")
             print('sa')
         else:
-            data = json.dumps({"throttle":0,"steer":9000}).encode("utf-8")
+            data = json.dumps({"throttle":0,"steer":0}).encode("utf-8")
         if keyboard.Key.space in currently_pressed:
-            data = json.dumps({"throttle":0,"steer":9000}).encode("utf-8")
+            data = json.dumps({"throttle":0,"steer":0}).encode("utf-8")
             print('space')
 
         if data is not None:
