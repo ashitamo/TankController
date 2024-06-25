@@ -1,3 +1,5 @@
+#! /usr/bin/pythpn3
+
 import socket
 import threading
 import time
