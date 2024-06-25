@@ -1,6 +1,6 @@
 import rospy
 from std_msgs.msg import String,Int8,Int16
-# import can
+import can
 import threading
 
 
@@ -13,11 +13,11 @@ class Steer():
         channel = 'can0'
         self._steer = 9000
         self.cid = 0x065
-        # self.bus = can.Bus(interface=bustype, channel=channel, receive_own_messages=True)
+        self.bus = can.Bus(interface=bustype, channel=channel, receive_own_messages=True)
         self.initRos()
 
     def initRos(self):
-        rospy.init_node('steer_node')
+        rospy.init_node('steer_node', anonymous=True)
         self.rate = rospy.Rate(10)
         rospy.Subscriber("/steer", Int16, self.callback)
 
@@ -31,9 +31,9 @@ class Steer():
             valLowByte = self._steer & 0xFF
             valHighByte = (self._steer >> 8) & 0xFF
             data = [valLowByte, valHighByte, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80]
-            # msg = can.Message(arbitration_id=self.cid, data=data, is_extended_id=False)
-            # if self.bus is not None:
-                # self.bus.send(msg,timeout=0.15)
+            msg = can.Message(arbitration_id=self.cid, data=data, is_extended_id=False)
+            if self.bus is not None:
+                self.bus.send(msg,timeout=0.15)
             self.rate.sleep()
 
 if __name__ == '__main__':

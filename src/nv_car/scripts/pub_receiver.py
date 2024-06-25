@@ -7,8 +7,9 @@ import rospy
 import math
 from std_msgs.msg import String,Int8,Int16
 
-
-HOST = "10.147.18.60"
+HOST = "127.0.0.1"
+#HOST = "10.147.18.60"
+#HOST = "10.22.233.150"
 PORT = 65432
 
 class Receiver(threading.Thread):
@@ -87,19 +88,26 @@ class rosPublisher:
 
     def attenuate(self,count):
         '''
+            輸出資料格式
+            throttle: -1000~1000
+            steer: -1000~1000
+
             斷訊時方向盤自動回正
             檔位保持上一個檔位
             油門歸零
         '''
-        attData = {"throttle":0,"steer":0,"stall":1}
+        attData = {"throttle":0,"steer":0,}
         if self.lastData is None:
             return attData
         
-        attData["stall"] = self.lastData["stall"]
         steer = self.lastData["steer"]
-        steer = int((steer)*math.exp(-count/2))
+        steer = int((steer)*math.exp(-count/10))
+        throttle = self.lastData["throttle"]
+        throttle = int((throttle)*math.exp(-count/5))
+        # if self.lastData["throttle"] < 0:
+        #     attData["throttle"] = -1
+        attData["throttle"] = throttle
         attData["steer"] = steer
-        attData["stall"] = self.lastData["stall"]
         return attData
     def convert(self,data):
         '''
@@ -111,29 +119,30 @@ class rosPublisher:
             stall: 1 2 4 8
 
             輸出資料格式
-            throttle: 0~30(stall = 1) 0~60(stall = 2)
-            steer: 0 ~ 18000
+            throttle: 0~40(stall = 1) 0~60(stall = 2)
+            steer: 1500~14500
             stall: 1 2 4 8
         '''
         if data is None:
-            #data = self.attenuate(self.count)
-            data = {"throttle":0,"steer":0,"stall":1}
+            data = self.attenuate(self.count)
+            #data = {"throttle":0,"steer":0,"stall":1}
             self.count+=1
         else:
             self.count = 0
+        self.lastData = data.copy()
 
         if data["throttle"] >= 0:
             stall = 1
-            data["throttle"] = abs(data["throttle"]*30/1000)
+            data["throttle"] = abs(data["throttle"]*40/1000)
         elif data["throttle"] < 0:
             stall= 2
             data["throttle"] = abs(data["throttle"]*60/1000)
-
-        data["steer"] = ((data["steer"]+1000)/2000)*18000
+        
+        data["steer"] = ((data["steer"]+1000)/2000)*1000+8500
         throttle = int(data["throttle"])
         steer = int(data["steer"])
         data = {"throttle":throttle,"steer":steer,"stall":stall}
-        self.lastData = data
+        
         return data
     
     def publish(self,data):
@@ -144,7 +153,7 @@ class rosPublisher:
 if __name__ == "__main__":
     receiver = Receiver()
     receiver.start()
-    rospy.init_node('receiver_node')
+    rospy.init_node('receiver_node', anonymous=True)
     rate = rospy.Rate(10)
     publisher = rosPublisher()
     while not rospy.is_shutdown():
@@ -153,5 +162,6 @@ if __name__ == "__main__":
         except queue.Empty:
             data = None
         data = publisher.convert(data)
+        print(data)
         publisher.publish(data)
         rate.sleep()
