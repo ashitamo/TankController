@@ -11,7 +11,7 @@ if __name__ == '__main__':
             msg = bus.recv()
             if msg.arbitration_id == 0x0363:
                 print("363: ",file=fw)
-                print("vsp",msg.data[0]+msg.data[1]*256,file=fw)
+                print("\tvsp",msg.data[0]+msg.data[1]*256,file=fw)
                 print(bin(msg.data[6]),file=fw)
 
 
@@ -21,15 +21,15 @@ if __name__ == '__main__':
 
             elif msg.arbitration_id == 0x067:
                 print("67: ",file=fw)
-                print("EPS Voltage",msg.data[1]/100*12)
-                print("Steer ang",msg.data[2]+msg.data[3]*256,file=fw)
-                print("Steer torque",msg.data[4]+msg.data[5]*256,file=fw)
-                print("Steer speed",msg.data[6]+msg.data[7]*256,file=fw)
+                print("\tEPS Voltage",msg.data[1]/100*12)
+                print("\tSteer ang",msg.data[2]+msg.data[3]*256,file=fw)
+                print("\tSteer torque",msg.data[4]+msg.data[5]*256,file=fw)
+                print("\tSteer speed",msg.data[6]+msg.data[7]*256,file=fw)
             elif msg.arbitration_id == 0x167:
                 print("167: ",file=fw)
-                print("EPS assist",bin(msg.data[3]),file=fw)
-                print("EPS status",bin(msg.data[7]),file=fw)
+                print("\tEPS assist",bin(msg.data[3]),file=fw)
+                print("\tEPS status",bin(msg.data[7]),file=fw)
             elif msg.arbitration_id == 0x267:
                 print("101: ",file=fw)
-                print(msg.data,file=fw)
+                print("\t",msg.data,file=fw)
 
