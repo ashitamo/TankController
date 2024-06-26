@@ -1,5 +1,5 @@
 import can
-
+import time
 
 
 if __name__ == '__main__':
@@ -45,5 +45,6 @@ if __name__ == '__main__':
                 print("\tthrottle",msg.data[0],file=fw)
             else:
                 print(msg)
-            
+
+            time.sleep(0.1)
 
