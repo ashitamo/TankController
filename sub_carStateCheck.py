@@ -36,7 +36,7 @@ class CarStateChecker_Recv(threading.Thread):
             except ConnectionRefusedError:
                 print("Connection refused")
             except TimeoutError:
-                print("time out")
+                print("waiting connection time out")
             except BaseException as e:
                 print(e)
                 self.socket = None
