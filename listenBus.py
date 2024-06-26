@@ -16,7 +16,6 @@ if __name__ == '__main__':
                 print("\tvcu2",bin(msg.data[5]),file=fw)
                 print("\tsign",bin(msg.data[6]),file=fw)
 
-
             elif msg.arbitration_id == 0x0A3:
                 print("A3: ",file=fw)
                 print("\tstall",msg.data[0],file=fw)

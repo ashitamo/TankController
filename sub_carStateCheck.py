@@ -5,6 +5,7 @@ import time
 import json
 import queue
 import random
+import can
 #import rospy
 #from std_msgs.msg import String,Int8,Int16
 
@@ -13,18 +14,49 @@ HOST = "10.147.18.60"
 #HOST = "10.22.233.150"
 PORT = 65434
 
+class CarStateReader(threading.Thread):
+    ESP_VOLT = -1
+    THROTTLE = -1
+    STEER = -1
+    STALL = -1
+    SPEED = -1
+
+    def __init__(self):
+        super().__init__()
+        self.daemon = True
+        self.bus = can.Bus(interface='socketcan', channel='can0', receive_own_messages=True)
+
+    def readBus(self):
+        msg = self.bus.recv()
+        if msg.arbitration_id == 0x363:
+            self.SPEED = msg.data[0]+msg.data[1]*256
+        elif msg.arbitration_id == 0x0A3:
+            self.STALL = msg.data[0]
+        elif msg.arbitration_id == 0x067:
+            self.ESP_VOLT = msg.data[1]/100*12
+            self.STEER = msg.data[2]+msg.data[3]*256
+        elif msg.arbitration_id == 0x50:
+            self.THROTTLE = msg.data[0]
+
+    def run(self):
+        while True: 
+            self.readBus()
+            time.sleep(0.01)
+
+
 class CarStateChecker_Recv(threading.Thread):
     socket = None
     def __init__(self):
         super().__init__()
         self.initSocket() 
         self.daemon = True
+        self.StateReader = CarStateReader()
+        self.StateReader.start()
     
     def initSocket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connecting(self):
-        
         while True:
             if self.socket is None:
                 self.initSocket()
@@ -61,10 +93,17 @@ class CarStateChecker_Recv(threading.Thread):
         data = data.decode("utf-8")
         try:
             data = json.loads(data)
+            data["ESP_VOLT"] = self.StateReader.ESP_VOLT
+            data["THROTTLE"] = self.StateReader.THROTTLE
+            data["STEER"] = self.StateReader.STEER
+            data["STALL"] = self.StateReader.STALL
+            data["SPEED"] = self.StateReader.SPEED
         except json.decoder.JSONDecodeError:
             return None
         try:
-            self.socket.sendall(json.dumps(data).encode("utf-8"))
+            data = json.dumps(data).encode("utf-8")
+            print(len(data))
+            self.socket.sendall(data)
         except TimeoutError:
             return None
         except BaseException as e:
