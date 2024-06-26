@@ -75,10 +75,14 @@ class CarStateChecker_Recv:
     def run(self):
         self.connecting()   
         while True:
-            data = self.respond()
-            if self.socket is None:
-                self.connecting()
-                continue
+            try:
+                data = self.respond()
+                if self.socket is None:
+                    self.connecting()
+                    continue
+            except KeyboardInterrupt:
+                self.socket.close()
+                break
             
 
 
