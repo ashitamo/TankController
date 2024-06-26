@@ -13,9 +13,10 @@ HOST = "10.147.18.60"
 #HOST = "10.22.233.150"
 PORT = 65434
 
-class CarStateChecker_Recv:
+class CarStateChecker_Recv(threading.Thread):
     socket = None
     def __init__(self):
+        super().__init__()
         self.initSocket() 
         self.daemon = True
     
@@ -75,19 +76,16 @@ class CarStateChecker_Recv:
     def run(self):
         self.connecting()   
         while True:
-            try:
-                data = self.respond()
-                if self.socket is None:
-                    self.connecting()
-                    continue
-            except KeyboardInterrupt:
-                self.socket.close()
-                break
-            
+            data = self.respond()
+            if self.socket is None:
+                self.connecting()
+                continue
 
 
 if __name__ == "__main__":
     checker = CarStateChecker_Recv()
-    checker.run()
+    checker.start()
+    while True:
+        time.sleep(0.1)
     
         
