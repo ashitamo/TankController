@@ -2,4 +2,4 @@
 __pycache__/*
 test.py
 __pycache__/emiter_controller.cpython-310.pyc
-data.txt
+*.txt
