@@ -1,22 +1,18 @@
 <launch>
-    <node pkg="nv_car" type="heartbeam.py" name="heartbeam_node" output="screen" />
-    <node pkg="nv_car" type="pub_receiver.py" name="receiver_node" output="screen" />
-    <node pkg="nv_car" type="sub_stall.py" name="stall_node" output="screen" />
-    <node pkg="nv_car" type="sub_steer.py" name="steer_node" output="screen" />
-    <node pkg="nv_car" type="sub_throttle.py" name="throttle_node" output="screen" />
-    
-    <node pkg="velodyne/velodyne_driver" type="velodyne_nodelet_manager" name="velodyne_nodelet_manager" />
-    <node pkg="velodyne/velodyne_pointcloud" type="cloud_node" name="velodyne_cloud_node" />
 
-    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
-        <param name="base_frame" value="base_link"/>
-        <param name="odom_frame" value="odom"/>
-        <param name="map_update_interval" value="5.0"/>
-        <param name="maxUrange" value="10.0"/>
-        <param name="maxRange" value="12.0"/>
-        <param name="minimumScore" value="50.0"/>
-    </node>
+  <node pkg="velodyne_driver" type="velodyne_nodelet_manager" name="velodyne_nodelet_manager" output="screen" />
+  <node pkg="velodyne_driver" type="velodyne_nodelet" name="driver" output="screen">
+    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
+  </node>
 
+  <node pkg="velodyne_pointcloud" type="transform" name="transform_node" output="screen">
+    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
+  </node>
+
+  <node pkg="velodyne_pointcloud" type="cloud_node" name="velodyne_cloud_node" output="screen">
+    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
+  </node>
 </launch>
+
 
 <!-- need to chmod +x file.py needed to launch -->
