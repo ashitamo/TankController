@@ -5,8 +5,8 @@
     <node pkg="nv_car" type="sub_steer.py" name="steer_node" output="screen" />
     <node pkg="nv_car" type="sub_throttle.py" name="throttle_node" output="screen" />
     
-    <node pkg="velodyne_driver" type="velodyne_nodelet_manager" name="velodyne_nodelet_manager" />
-    <node pkg="velodyne_pointcloud" type="cloud_node" name="velodyne_cloud_node" />
+    <node pkg="velodyne/velodyne_driver" type="velodyne_nodelet_manager" name="velodyne_nodelet_manager" />
+    <node pkg="velodyne/velodyne_pointcloud" type="cloud_node" name="velodyne_cloud_node" />
 
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
         <param name="base_frame" value="base_link"/>
