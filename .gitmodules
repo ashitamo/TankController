@@ -4,3 +4,6 @@
 [submodule "src/slam_gmapping"]
 	path = src/slam_gmapping
 	url = https://github.com/ros-perception/slam_gmapping.git
+[submodule "src/openslam_gmapping"]
+	path = src/openslam_gmapping
+	url = https://github.com/ros-perception/openslam_gmapping.git
