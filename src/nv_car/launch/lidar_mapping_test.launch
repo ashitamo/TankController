@@ -1,17 +1,5 @@
 <launch>
-
-  <node pkg="velodyne_driver" type="velodyne_nodelet_manager" name="velodyne_nodelet_manager" output="screen" />
-  <node pkg="velodyne_driver" type="velodyne_nodelet" name="driver" output="screen">
-    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
-  </node>
-
-  <node pkg="velodyne_pointcloud" type="transform" name="transform_node" output="screen">
-    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
-  </node>
-
-  <node pkg="velodyne_pointcloud" type="cloud_node" name="velodyne_cloud_node" output="screen">
-    <param name="calibration" value="$(find velodyne_pointcloud)/params/VLP16db.yaml"/>
-  </node>
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
 </launch>
 
 
