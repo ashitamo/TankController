@@ -19,6 +19,9 @@ class Receiver(threading.Thread):
         super().__init__()
         self.daemon = True
         self.rosQueue = queue.Queue(1)
+        self.totalCount = 0
+        self.failCount = 0
+        self.recvTimeoutDuration = 0.15
     
     def initSocket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,7 +31,7 @@ class Receiver(threading.Thread):
         while True:
             if self.socket is None:
                 self.initSocket()
-            self.socket.settimeout(10)
+            self.socket.settimeout(5)
             try:
                 self.socket.connect((HOST, PORT))
                 print("connected")
@@ -41,13 +44,24 @@ class Receiver(threading.Thread):
                 print(e)
                 self.socket = None
                 continue
+        self.recvTimeoutDuration = 0.15
         self.socket.settimeout(None)  
 
     def recive(self):
-        self.socket.settimeout(0.15)
+        if self.totalCount> 100:
+            self.totalCount%=50
+            self.failCount%=50
+        self.recvTimeoutDuration += 0.15 + (self.failCount/self.totalCount)*100 * 0.01
+        if self.recvTimeoutDuration > 0.75:
+            self.recvTimeoutDuration = 0.75
+        elif self.recvTimeoutDuration < 0.15:
+            self.recvTimeoutDuration = 0.15
+        self.socket.settimeout(self.recvTimeoutDuration)   
         try:
+            self.totalCount+=1
             data = self.socket.recv(40)
         except TimeoutError:
+            self.failCount+=1
             return None
         except BaseException as e:
             #print(e)
