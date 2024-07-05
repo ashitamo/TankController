@@ -52,7 +52,7 @@ class Receiver(threading.Thread):
         if self.totalCount> 100:
             self.totalCount = self.totalCount % 50+1
             self.failCount = self.failCount % 50
-        self.recvTimeoutDuration += 0.15 + (self.failCount/self.totalCount)*100 * 0.01
+        self.recvTimeoutDuration = 0.15 + (self.failCount/self.totalCount)*100 * 0.01
         print(self.recvTimeoutDuration)
         if self.recvTimeoutDuration > 0.75:
             self.recvTimeoutDuration = 0.75
