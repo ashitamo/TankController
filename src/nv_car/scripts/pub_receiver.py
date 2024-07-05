@@ -21,7 +21,7 @@ class Receiver(threading.Thread):
         self.daemon = True
         self.rosQueue = queue.Queue(1)
         self.totalCount = 1
-        self.failCount = 1
+        self.failCount = 0
         self.recvTimeoutDuration = 0.15
     
     def initSocket(self):
@@ -51,7 +51,7 @@ class Receiver(threading.Thread):
     def recive(self):
         if self.totalCount> 100:
             self.totalCount = self.totalCount % 50+1
-            self.failCount = self.failCount % 50+1
+            self.failCount = self.failCount % 50
         self.recvTimeoutDuration += 0.15 + (self.failCount/self.totalCount)*100 * 0.01
         print(self.recvTimeoutDuration)
         if self.recvTimeoutDuration > 0.75:
@@ -76,8 +76,11 @@ class Receiver(threading.Thread):
             return None
         data = data.decode("utf-8")
         try:
+            if random.random() < 0.01:
+                data = None
             data = json.loads(data)
         except json.decoder.JSONDecodeError:
+            self.failCount+=1
             return None
         return data
     
