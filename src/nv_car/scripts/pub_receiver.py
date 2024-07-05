@@ -7,6 +7,7 @@ import json
 import queue
 import rospy
 import math
+import random
 from std_msgs.msg import String,Int8,Int16
 
 HOST = "10.147.18.60"
@@ -19,8 +20,8 @@ class Receiver(threading.Thread):
         super().__init__()
         self.daemon = True
         self.rosQueue = queue.Queue(1)
-        self.totalCount = 0
-        self.failCount = 0
+        self.totalCount = 1
+        self.failCount = 1
         self.recvTimeoutDuration = 0.15
     
     def initSocket(self):
@@ -49,9 +50,10 @@ class Receiver(threading.Thread):
 
     def recive(self):
         if self.totalCount> 100:
-            self.totalCount%=50
-            self.failCount%=50
+            self.totalCount = self.totalCount % 50+1
+            self.failCount = self.failCount % 50+1
         self.recvTimeoutDuration += 0.15 + (self.failCount/self.totalCount)*100 * 0.01
+        print(self.recvTimeoutDuration)
         if self.recvTimeoutDuration > 0.75:
             self.recvTimeoutDuration = 0.75
         elif self.recvTimeoutDuration < 0.15:
