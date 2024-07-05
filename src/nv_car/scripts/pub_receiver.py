@@ -79,7 +79,7 @@ class Receiver(threading.Thread):
             if random.random() < 0.01:
                 data = None
             data = json.loads(data)
-        except json.decoder.JSONDecodeError:
+        except:
             self.failCount+=1
             return None
         return data
