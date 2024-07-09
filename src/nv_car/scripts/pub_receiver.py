@@ -76,8 +76,6 @@ class Receiver(threading.Thread):
             return None
         data = data.decode("utf-8")
         try:
-            if random.random() < 0.01:
-                data = None
             data = json.loads(data)
         except:
             self.failCount+=1
