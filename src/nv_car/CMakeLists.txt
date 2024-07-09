@@ -7,7 +7,15 @@ project(nv_car)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
+  std_msgs
+  sensor_msgs
+  tf
+  gmapping
+  velodyne_driver
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -100,8 +108,8 @@ find_package(catkin REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES nv_car
-#  CATKIN_DEPENDS other_catkin_pkg
+#  LIBRARIES my_gmapping_package
+  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs tf gmapping velodyne_driver
 #  DEPENDS system_lib
 )
 
