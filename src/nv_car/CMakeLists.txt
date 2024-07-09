@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   gmapping
   velodyne_driver
+  nav_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -109,13 +110,13 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES my_gmapping_package
-  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs tf gmapping velodyne_driver
+  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs tf gmapping velodyne_driver nav_msgs
 #  DEPENDS system_lib
 )
 
 # adding new scripts at here
 
-catkin_install_python(PROGRAMS scripts/pub_receiver.py scripts/sub_stall.py scripts/sub_steer.py scripts/sub_throttle.py
+catkin_install_python(PROGRAMS scripts/pub_receiver.py scripts/sub_stall.py scripts/sub_steer.py scripts/sub_throttle.py scripts/pub_odom.py
  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
