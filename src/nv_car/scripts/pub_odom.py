@@ -4,7 +4,7 @@ from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 
 def odom_publisher():
     rospy.init_node('odom_publisher_node', anonymous=True)
-    rospy.loginfo("Start publisher node")
+    rospy.loginfo("Start odom node")
     pub = rospy.Publisher('odom', Odometry, queue_size=10)
     rate = rospy.Rate(10)  # 10Hz
 
