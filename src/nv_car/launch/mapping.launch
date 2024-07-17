@@ -2,7 +2,6 @@
 <!-- run velodyne_pointcloud/TransformNodelet in a nodelet manager for an VLP-32C -->
 
 <launch>
-  <node pkg="nv_car" type="pub_odom.py" name="odom_node" output="screen"></node>
   <!-- declare arguments with default values -->
   <arg name="calibration" default="$(find velodyne_pointcloud)/params/VeloView-VLP-32C.yaml"/>
   <arg name="device_ip" default="" />

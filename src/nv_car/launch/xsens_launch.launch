@@ -14,6 +14,7 @@
     <!-- node -->
 	<node pkg="xsens_driver" type="mtnode.py" name="xsens_driver" output="screen" >
 		<param name="device" value="$(arg device)"/>
+        <param name="port" value="/dev/ttyUSB0"/>
 		<param name="baudrate" value="$(arg baudrate)"/>
 		<param name="timeout" value="$(arg timeout)"/>
 		<param name="initial_wait" value="$(arg initial_wait)"/>
