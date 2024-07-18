@@ -93,11 +93,11 @@ class CarStateChecker_Recv(threading.Thread):
         data = data.decode("utf-8")
         try:
             data = json.loads(data)
-            data["ESP_VOLT"] = self.StateReader.ESP_VOLT
-            data["THROTTLE"] = self.StateReader.THROTTLE
-            data["STEER"] = self.StateReader.STEER
-            data["STALL"] = self.StateReader.STALL
-            data["SPEED"] = self.StateReader.SPEED
+            data["ESP_VOLT"] = int(self.StateReader.ESP_VOLT*100)
+            # data["THROTTLE"] = self.StateReader.THROTTLE
+            # data["STEER"] = self.StateReader.STEER
+            # data["STALL"] = self.StateReader.STALL
+            data["SPEED"] = int(self.StateReader.SPEED//1000)
         except json.decoder.JSONDecodeError:
             return None
         try:
