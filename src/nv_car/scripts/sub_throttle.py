@@ -28,7 +28,7 @@ class Throttle:
             self._throttle = data.data
         elif data.data>50:
             self._throttle = 50
-        rospy.loginfo(rospy.get_caller_id() + "throttle %s", self._throttle)
+        #rospy.loginfo(rospy.get_caller_id() + "throttle %s", self._throttle)
 
     def run(self):
         rate = rospy.Rate(10)

@@ -24,7 +24,7 @@ class Steer():
         rospy.Subscriber("/steer", Int16, self.callback)
 
     def callback(self,data):
-        rospy.loginfo(rospy.get_caller_id() + "steer %s", data.data)
+        #rospy.loginfo(rospy.get_caller_id() + "steer %s", data.data)
         if data.data>=0 and data.data<=18000:
             self._steer = data.data
 

@@ -53,7 +53,7 @@ class Receiver(threading.Thread):
             self.totalCount = self.totalCount % 50+1
             self.failCount = self.failCount % 50
         self.recvTimeoutDuration = 0.15 + (self.failCount/self.totalCount)*100 * 0.01
-        print(self.recvTimeoutDuration)
+        #print(self.recvTimeoutDuration)
         if self.recvTimeoutDuration > 0.75:
             self.recvTimeoutDuration = 0.75
         elif self.recvTimeoutDuration < 0.15:
@@ -179,6 +179,6 @@ if __name__ == "__main__":
         except queue.Empty:
             data = None
         data = publisher.convert(data)
-        print(data)
+        #print(data)
         publisher.publish(data)
         rate.sleep()

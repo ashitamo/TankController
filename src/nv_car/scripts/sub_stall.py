@@ -27,7 +27,7 @@ class Stall:
         
         if data.data in [1 ,2, 4, 8]:
             self._stall = data.data
-        rospy.loginfo(rospy.get_caller_id() + "stall %s",self._stall)
+        #rospy.loginfo(rospy.get_caller_id() + "stall %s",self._stall)
 
     def run(self):
         while not rospy.is_shutdown():
