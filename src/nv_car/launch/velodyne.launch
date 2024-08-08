@@ -1,6 +1,3 @@
-<!-- -*- mode: XML -*- -->
-<!-- run velodyne_pointcloud/TransformNodelet in a nodelet manager for an VLP-32C -->
-
 <launch>
   <!-- declare arguments with default values -->
   <arg name="calibration" default="$(find velodyne_pointcloud)/params/VeloView-VLP-32C.yaml"/>
@@ -14,13 +11,13 @@
   <arg name="read_fast" default="false" />
   <arg name="read_once" default="false" />
   <arg name="repeat_delay" default="0.0" />
-  <arg name="rpm" default="600.0" />
+  <arg name="rpm" default="1200.0" />
   <arg name="gps_time" default="false" />
   <arg name="pcap_time" default="false" />
   <arg name="cut_angle" default="-0.01" />
   <arg name="timestamp_first_packet" default="false" />
   <arg name="laserscan_ring" default="-1" />
-  <arg name="laserscan_resolution" default="0.007" />
+  <arg name="laserscan_resolution" default="0.003" />
   <arg name="organize_cloud" default="false" />
 
   <!-- start nodelet manager and driver nodelets -->
@@ -60,35 +57,8 @@
     <arg name="resolution" value="$(arg laserscan_resolution)"/>
   </include>
 
-  <!-- Static transform from base_link to velodyne -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_velodyne"  -->
-        <!-- args="0 0 0 0 0 0 base_link velodyne 100" /> -->
-
-  <!-- Static transform from map to odom (for initialization) -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="map_to_odom"  -->
-        <!-- args="0 0 0 0 0 0 map odom 100" /> -->
-
-  <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_imu" -->
-        <!-- args="0 0 0 0 0 0 base_link imu 100"/> -->
-
-  <!-- Gmapping node -->
-  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
-    <param name="base_frame" value="base_link"/>
-    <param name="odom_frame" value="odom"/>
-    <param name="map_frame" value="map"/>
-    <param name="scan_topic" value="/scan"/>
-    <param name="map_update_interval" value="1.0"/>
-    <param name="maxUrange" value="8.0"/>
-    <param name="maxRange" value="12.0"/>
-    <param name="minimumScore" value="50"/>
-    <param name="sigma" value="0.05"/>
-    <param name="kernelSize" value="1"/>
-    <param name="lstep" value="0.05"/>
-    <param name="astep" value="0.05"/>
-    <param name="iterations" value="5"/>
-    <param name="lsigma" value="0.075"/>
-    <param name="ogain" value="3.0"/>
-    <param name="lskip" value="0"/>
-  </node>
-        
+    <node pkg="tf" type="static_transform_publisher" name="base_to_velodyne" 
+        args="0 0 0 0 0 0 base_link velodyne 10" />
+    <node pkg="tf" type="static_transform_publisher" name="map_to_base" 
+        args="0 0 0 0 0 0 map base_link 10" />
 </launch>

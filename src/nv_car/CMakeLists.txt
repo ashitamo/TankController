@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   gmapping
   velodyne_driver
   nav_msgs
+  robot_pose_ekf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -110,7 +111,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES my_gmapping_package
-  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs tf gmapping velodyne_driver nav_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs tf gmapping velodyne_driver nav_msgs hector_mapping
 #  DEPENDS system_lib
 )
 

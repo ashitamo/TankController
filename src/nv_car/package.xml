@@ -58,6 +58,7 @@
   <build_depend>gmapping</build_depend>
   <build_depend>velodyne_driver</build_depend>
   <build_depend>nav_msgs</build_depend>
+  <build_depend>hector_mapping</build_depend>
 
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
@@ -67,6 +68,7 @@
   <exec_depend>gmapping</exec_depend>
   <exec_depend>velodyne_driver</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>hector_mapping</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
