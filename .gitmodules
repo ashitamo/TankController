@@ -7,3 +7,6 @@
 [submodule "src/openslam_gmapping"]
 	path = src/openslam_gmapping
 	url = https://github.com/ros-perception/openslam_gmapping.git
+[submodule "src/LIO-SAM"]
+	path = src/LIO-SAM
+	url = https://github.com/TixiaoShan/LIO-SAM.git

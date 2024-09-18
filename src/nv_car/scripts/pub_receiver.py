@@ -11,6 +11,7 @@ import random
 from std_msgs.msg import String,Int8,Int16
 
 HOST = "10.147.18.60"
+#HOST = "192.168.0.157"
 PORT = 65432
 
 class Receiver(threading.Thread):
@@ -61,7 +62,7 @@ class Receiver(threading.Thread):
         self.socket.settimeout(self.recvTimeoutDuration)   
         try:
             self.totalCount+=1
-            data = self.socket.recv(40)
+            data = self.socket.recv(65)
         except TimeoutError:
             self.failCount+=1
             return None
@@ -100,6 +101,7 @@ class rosPublisher:
         self.stallPublisher = rospy.Publisher("/stall",Int8,queue_size=10)
         self.throttlePublisher = rospy.Publisher("/throttle",Int8,queue_size=10)
         self.steerPublisher = rospy.Publisher("/steer",Int16,queue_size=10)
+        self.cannonPublisher = rospy.Publisher("/cannon",String,queue_size=10)
         self.lastData = None
         self.count = 0
 
@@ -158,14 +160,25 @@ class rosPublisher:
         data["steer"] = ((data["steer"]+1000)/2000)*1000+8500
         throttle = int(data["throttle"])
         steer = int(data["steer"])
-        data = {"throttle":throttle,"steer":steer,"stall":stall}
+        cannon_cmd = ''
+        if 'b' in data.keys():
+            cannon_cmd = 'reset_base,0,0'
+        elif 'f' in data.keys():
+            cannon_cmd = 'reset_fort,0,0'
+
+        elif 'base' in data.keys() and 'fort' in data.keys():
+            cannon_cmd = 'c,{},{}'.format(data['base'],data['fort'])
         
+        data = {"throttle":throttle,"steer":steer,"stall":stall,'cannon': cannon_cmd}
+        
+
         return data
     
     def publish(self,data):
         self.stallPublisher.publish(data["stall"])
         self.throttlePublisher.publish(data["throttle"])
         self.steerPublisher.publish(data["steer"])
+        self.cannonPublisher.publish(data['cannon'])
     
 if __name__ == "__main__":
     receiver = Receiver()
@@ -179,6 +192,7 @@ if __name__ == "__main__":
         except queue.Empty:
             data = None
         data = publisher.convert(data)
-        #print(data)
+        print(data)
+        
         publisher.publish(data)
         rate.sleep()

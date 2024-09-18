@@ -2,10 +2,10 @@
   <arg name="tf_map_scanmatch_transform_frame_name" default="scanmatcher_frame"/>
   <arg name="base_frame" default="base_link"/>
   <arg name="odom_frame" default="base_link"/>
-  <arg name="pub_map_odom_transform" default="true"/>
-  <arg name="scan_subscriber_queue_size" default="5"/>
+  <arg name="pub_map_odom_transform" default="false"/>
+  <arg name="scan_subscriber_queue_size" default="50"/>
   <arg name="scan_topic" default="scan"/>
-  <arg name="map_size" default="2048"/>
+  <arg name="map_size" default="1024"/>
   
   <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
     
@@ -20,7 +20,7 @@
     <param name="pub_map_odom_transform" value="$(arg pub_map_odom_transform)"/>
     
     <!-- Map size / start point -->
-    <param name="map_resolution" value="0.050"/>
+    <param name="map_resolution" value="0.025"/>
     <param name="map_size" value="$(arg map_size)"/>
     <param name="map_start_x" value="0.5"/>
     <param name="map_start_y" value="0.5" />
@@ -31,10 +31,12 @@
     <param name="update_factor_occupied" value="0.9" />    
     <param name="map_update_distance_thresh" value="0.4"/>
     <param name="map_update_angle_thresh" value="0.06" />
-    <param name="laser_z_min_value" value = "-1.0" />
-    <param name="laser_z_max_value" value = "1.0" />
+    <param name="laser_z_min_value" value="-1.0" />
+    <param name="laser_z_max_value" value="1.0" />
+    <param name="laser_min_dist" value="0.5" />
+    <param name="laser_max_dist" value="20.0" />
     
-    <!-- Advertising config --> 
+    <!-- Advertising config -->
     <param name="advertise_map_service" value="true"/>
     
     <param name="scan_subscriber_queue_size" value="$(arg scan_subscriber_queue_size)"/>
