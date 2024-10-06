@@ -9,7 +9,7 @@ import time
 
 # Serial Port Information
 SERIAL_PORT = '/dev/ttyACM0'  # Update this to your port
-BAUD_RATE = 57600
+BAUD_RATE = 5760
 # Global Serial Object
 
 class Arduino:
