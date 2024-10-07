@@ -124,8 +124,8 @@ class Cannon(threading.Thread):
         msg = data.data.split(",")
         if len(msg) != 2:
             return
-        self.base = int(msg[1])
-        self.fort = int(msg[2])
+        self.base = int(msg[0])
+        self.fort = int(msg[1])
         #rospy.loginfo(rospy.get_caller_id() + "stall %s",self._stall)
 
     def run(self):
