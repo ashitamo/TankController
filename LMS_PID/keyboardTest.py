@@ -16,6 +16,8 @@ class Arduino:
         self.recvThread.daemon = True
         self.recvThread.start()
         self.base_angle_input = 0
+        self.base_target_angle = 0
+        self.fort_target_angle = 0
         self.fort_angle_input = 0
         self.status = 0
 
@@ -85,6 +87,8 @@ class Arduino:
                 response = self.serial.readline().decode('utf-8', errors='ignore').strip()
                 response = response.split(",")
                 self.status = int(response[0])
+                self.base_angle_input = int(response[1])
+                self.fort_angle_input = int(response[3])
                 print(response)
 
 if __name__ == '__main__':

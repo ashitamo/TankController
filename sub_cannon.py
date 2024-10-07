@@ -21,6 +21,8 @@ class Arduino:
         self.recvThread.daemon = True
         self.recvThread.start()
         self.base_angle_input = 0
+        self.base_target_angle = 0
+        self.fort_target_angle = 0
         self.fort_angle_input = 0
         self.status = 0
 
@@ -90,6 +92,9 @@ class Arduino:
                 response = self.serial.readline().decode('utf-8', errors='ignore').strip()
                 response = response.split(",")
                 self.status = int(response[0])
+                self.base_angle_input = int(response[1])
+                self.fort_angle_input = int(response[3])
+                #print(response)
 
 class Cannon(threading.Thread):
     bus = None
@@ -101,6 +106,7 @@ class Cannon(threading.Thread):
         self.fort = 0
         self.reset_ms_base = False
         self.reset_ms_fort = False
+        self.cmdQueue = queue.Queue(2)
         self.initRos()
 
     def initRos(self):
@@ -116,12 +122,10 @@ class Cannon(threading.Thread):
             self.reset_ms_fort = True
     def callback(self,data):
         msg = data.data.split(",")
-        if len(msg) != 3:
+        if len(msg) != 2:
             return
-        self.cmd = msg[0]
-        if self.cmd not in ["reset_fort","reset_base"]:
-            self.base = int(msg[1])
-            self.fort = int(msg[2])
+        self.base = int(msg[1])
+        self.fort = int(msg[2])
         #rospy.loginfo(rospy.get_caller_id() + "stall %s",self._stall)
 
     def run(self):
@@ -135,13 +139,14 @@ class Cannon(threading.Thread):
                 self.arduino.reset_motor_switch("FORT")
                 self.reset_ms_fort = False
                 continue
-            print(self.fort,self.base)
-            if b:
-                b = False
+            print(self.fort,self.base,self.arduino.fort_angle_input,self.arduino.base_angle_input)
+
+            if self.fort != self.arduino.fort_target_angle:
                 self.arduino.set_target_angle("FORT", self.fort)
-            else:
-                b = True
+            if self.base != self.arduino.base_target_angle:
                 self.arduino.set_target_angle("BASE", self.base)
+            
+                
             self.rate.sleep()
 
 if __name__ == '__main__':
