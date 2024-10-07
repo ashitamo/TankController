@@ -1,15 +1,10 @@
-#! /usr/bin/python3
-
-import rospy
-from std_msgs.msg import String,Int8,Int16
-import can
-import threading
 import serial
 import time
-import queue
+from pynput import keyboard
+import threading
 
 # Serial Port Information
-SERIAL_PORT = '/dev/ttyACM0'  # Update this to your port
+SERIAL_PORT = 'COM5'  # Update this to your port
 BAUD_RATE = 57600
 # Global Serial Object
 
@@ -90,64 +85,65 @@ class Arduino:
                 response = self.serial.readline().decode('utf-8', errors='ignore').strip()
                 response = response.split(",")
                 self.status = int(response[0])
-
-class Cannon(threading.Thread):
-    bus = None
-    def __init__(self):
-        super(Cannon, self).__init__()
-        self.daemon = True
-        self.arduino = Arduino()
-        self.base = 0
-        self.fort = 0
-        self.reset_ms_base = False
-        self.reset_ms_fort = False
-        self.initRos()
-
-    def initRos(self):
-        rospy.init_node('cannon_node', anonymous=True)
-        self.rate = rospy.Rate(10)
-        rospy.Subscriber("/cannon", String, self.callback)
-        rospy.Subscriber("/cannon_reset", String, self.callback_reset)
-    def callback_reset(self,data):
-        msg = data.data
-        if msg == "reset_fort":
-            self.reset_ms_base = True
-        elif msg == "reset_base":
-            self.reset_ms_fort = True
-    def callback(self,data):
-        msg = data.data.split(",")
-        if len(msg) != 3:
-            return
-        self.cmd = msg[0]
-        if self.cmd not in ["reset_fort","reset_base"]:
-            self.base = int(msg[1])
-            self.fort = int(msg[2])
-        #rospy.loginfo(rospy.get_caller_id() + "stall %s",self._stall)
-
-    def run(self):
-        b = True
-        while not rospy.is_shutdown():
-            if self.reset_ms_base:
-                self.arduino.reset_motor_switch("BASE")
-                self.reset_ms_base = False
-                continue
-            elif self.reset_ms_fort:
-                self.arduino.reset_motor_switch("FORT")
-                self.reset_ms_fort = False
-                continue
-            print(self.fort,self.base)
-            if b:
-                b = False
-                self.arduino.set_target_angle("FORT", self.fort)
-            else:
-                b = True
-                self.arduino.set_target_angle("BASE", self.base)
-            self.rate.sleep()
+                print(response)
 
 if __name__ == '__main__':
-    try:
-        Cannon = Cannon()
-        Cannon.run()
-        rospy.spin()
-    except rospy.ROSInterruptException:
-        pass
+    arduino = Arduino()
+    currently_pressed = set()
+    def on_release(key):
+        try:
+            currently_pressed.remove(key.char)
+        except AttributeError:
+            if key in [keyboard.Key.space, 
+                       keyboard.Key.up, 
+                       keyboard.Key.down, 
+                       keyboard.Key.left, 
+                       keyboard.Key.right]:
+                currently_pressed.remove(key)
+            pass
+    def on_press(key):
+        try:
+            currently_pressed.add(key.char)
+        except AttributeError:
+            if key in [keyboard.Key.space, 
+                       keyboard.Key.up, 
+                       keyboard.Key.down, 
+                       keyboard.Key.left, 
+                       keyboard.Key.right]:
+                currently_pressed.add(key)
+            pass
+    listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+    listener.start()
+    b = True
+    while True:
+        if currently_pressed == set(['w']):
+            arduino.fort_angle_input -= 1
+        elif currently_pressed == set(['s']):
+            arduino.fort_angle_input += 1
+        elif currently_pressed == set(['a']):
+            arduino.base_angle_input -= 2
+        elif currently_pressed == set(['d']):
+            arduino.base_angle_input += 2
+        elif currently_pressed == set(['b']):
+            print("reset base")
+            arduino.reset_motor_switch("BASE")
+            print("reset base done")
+            continue
+        elif currently_pressed == set(['f']):
+            print("reset fort")
+            arduino.reset_motor_switch("FORT")
+            print("reset fort done")
+            continue
+        elif currently_pressed == set([keyboard.Key.space]):
+            arduino.launch()
+            time.sleep(0.1)
+            print("launched")
+            continue
+        print(arduino.base_angle_input, arduino.fort_angle_input)
+        if b:
+            arduino.set_target_angle("BASE", arduino.base_angle_input)
+            b = False
+        else:
+            arduino.set_target_angle("FORT", arduino.fort_angle_input)
+            b = True
+        time.sleep(0.01)
