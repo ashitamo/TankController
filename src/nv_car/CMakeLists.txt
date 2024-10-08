@@ -118,7 +118,7 @@ catkin_package(
 
 # adding new scripts at here
 
-catkin_install_python(PROGRAMS scripts/pub_receiver.py scripts/sub_stall.py scripts/sub_steer.py scripts/sub_throttle.py scripts/pub_odom.py
+catkin_install_python(PROGRAMS scripts/pub_receiver.py scripts/sub_stall.py scripts/sub_steer.py scripts/sub_throttle.py scripts/pub_odom.py scripts/localization.py
  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

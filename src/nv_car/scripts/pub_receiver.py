@@ -161,14 +161,8 @@ class rosPublisher:
         throttle = int(data["throttle"])
         steer = int(data["steer"])
         cannon_cmd = ''
-        if 'b' in data.keys():
-            cannon_cmd = 'reset_base,0,0'
-        elif 'f' in data.keys():
-            cannon_cmd = 'reset_fort,0,0'
-
-        elif 'base' in data.keys() and 'fort' in data.keys():
-            cannon_cmd = 'c,{},{}'.format(data['base'],data['fort'])
-        
+        if 'base' in data.keys() and 'fort' in data.keys():
+            cannon_cmd = '{},{}'.format(data['base'],data['fort'])
         data = {"throttle":throttle,"steer":steer,"stall":stall,'cannon': cannon_cmd}
         
 

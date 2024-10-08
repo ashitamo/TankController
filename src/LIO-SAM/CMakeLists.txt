@@ -2,11 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(lio_sam)
 
 set(CMAKE_BUILD_TYPE "Release")
-<<<<<<< HEAD
 set(CMAKE_CXX_FLAGS "-std=c++14")
-=======
-set(CMAKE_CXX_FLAGS "-std=c++11")
->>>>>>> 2d7633cdd1fcef79595bea64665e3e15e4f9f4af
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g -pthread")
 
 find_package(catkin REQUIRED COMPONENTS
@@ -25,7 +21,6 @@ find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
 )
 
-<<<<<<< HEAD
 find_package(Eigen3 3.4 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIRS})
 
@@ -34,11 +29,6 @@ find_package(PCL REQUIRED QUIET)
 # find_package(OpenCV REQUIRED QUIET)
 set(OpenCV_DIR /usr/lib/aarch64-linux-gnu/cmake/opencv4)
 find_package(OpenCV 4.2 REQUIRED)
-=======
-find_package(OpenMP REQUIRED)
-find_package(PCL REQUIRED QUIET)
-find_package(OpenCV REQUIRED QUIET)
->>>>>>> 2d7633cdd1fcef79595bea64665e3e15e4f9f4af
 find_package(GTSAM REQUIRED QUIET)
 find_package(Boost REQUIRED COMPONENTS timer)
 
@@ -116,3 +106,4 @@ target_link_libraries(${PROJECT_NAME}_mapOptmization Boost::timer ${catkin_LIBRA
 # IMU Preintegration
 add_executable(${PROJECT_NAME}_imuPreintegration src/imuPreintegration.cpp)
 target_link_libraries(${PROJECT_NAME}_imuPreintegration Boost::timer ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES} gtsam)
+

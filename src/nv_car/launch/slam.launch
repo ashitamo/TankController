@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find xsens_mti_driver)/launch/xsens_mti_node.launch"/>
+  <include file="$(find nv_car)/launch/VLP-32C_points.launch"/>
+  <include file="$(find lio_sam)/launch/run.launch"/>
+</launch>
