@@ -15,7 +15,11 @@
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
+<<<<<<< HEAD
 #include <opencv2/imgproc.hpp>
+=======
+#include <opencv/cv.h>
+>>>>>>> 2d7633cdd1fcef79595bea64665e3e15e4f9f4af
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
