@@ -113,7 +113,7 @@ class Cannon(threading.Thread):
         self.fort = 0
         self.reset_ms_base = False
         self.reset_ms_fort = False
-        self.cmdQueue = queue.Queue(2)
+        self.launchQueue = queue.Queue(1)
         self.initRos()
 
     def initRos(self):
@@ -129,10 +129,12 @@ class Cannon(threading.Thread):
             self.reset_ms_fort = True
     def callback(self,data):
         msg = data.data.split(",")
-        if len(msg) != 2:
-            return
-        self.base = int(msg[0])
-        self.fort = int(msg[1])
+        if len(msg) == 2:
+            self.base = int(msg[0])
+            self.fort = int(msg[1])
+        elif msg == "launch":
+            if not self.launchQueue.full():
+                self.launchQueue.put(True)
         #rospy.loginfo(rospy.get_caller_id() + "stall %s",self._stall)
 
     def run(self):
@@ -141,19 +143,17 @@ class Cannon(threading.Thread):
             if self.reset_ms_base:
                 self.arduino.reset_motor_switch("BASE")
                 self.reset_ms_base = False
-                continue
             elif self.reset_ms_fort:
                 self.arduino.reset_motor_switch("FORT")
                 self.reset_ms_fort = False
-                continue
             print(self.fort,self.base,self.arduino.fort_angle_input,self.arduino.base_angle_input)
-
+            if not self.launchQueue.empty():
+                self.launchQueue.get()
+                self.arduino.launch()
             if self.fort != self.arduino.fort_target_angle:
                 self.arduino.set_target_angle("FORT", self.fort)
-                continue
             if self.base != self.arduino.base_target_angle:
                 self.arduino.set_target_angle("BASE", self.base)
-                continue
             
                 
             self.rate.sleep()
