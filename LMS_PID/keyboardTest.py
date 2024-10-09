@@ -90,7 +90,6 @@ class Arduino:
                 response = response.split(",")
                 if len(response) != 6:
                     continue
-<<<<<<< HEAD
                 try:
                     self.status = int(response[0])
                     self.base_target_angle = float(response[1])
@@ -98,12 +97,6 @@ class Arduino:
                     print(response)
                 except:
                     pass
-=======
-                self.status = int(response[0])
-                self.base_target_angle = float(response[1])
-                self.fort_target_angle= float(response[3])
-                print(response)
->>>>>>> 8f7d172f6d00ed28a7de23d2d5f5bfaf1263f954
 
 if __name__ == '__main__':
     arduino = Arduino()
