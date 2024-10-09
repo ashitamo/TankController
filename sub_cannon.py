@@ -20,8 +20,10 @@ class Arduino:
         self.recvThread = threading.Thread(target=self.recv)
         self.recvThread.daemon = True
         self.recvThread.start()
-        self.base_angle_input = 0
+        
         self.base_target_angle = 0
+        self.base_angle_input = 0
+
         self.fort_target_angle = 0
         self.fort_angle_input = 0
         self.status = 0
@@ -30,7 +32,7 @@ class Arduino:
     def open_serial_connection(self):
         while True:
             try:
-                self.serial = serial.Serial(port=SERIAL_PORT, baudrate=BAUD_RATE, timeout=1)
+                self.serial = serial.Serial(port=SERIAL_PORT, baudrate=BAUD_RATE, timeout=None)
                 time.sleep(2)  # Allow time for the connection to stabilize
                 print("Serial connection established")
                 return
@@ -46,7 +48,7 @@ class Arduino:
         try:
             if self.serial is None or not self.serial.is_open:
                 self.open_serial_connection()
-            self.serial.flush()
+            # self.serial.flush()
             self.serial.write(command.encode())
             time.sleep(0.01)
         except serial.SerialException:
@@ -91,10 +93,15 @@ class Arduino:
             if self.serial.in_waiting:
                 response = self.serial.readline().decode('utf-8', errors='ignore').strip()
                 response = response.split(",")
-                self.status = int(response[0])
-                self.base_angle_input = int(response[1])
-                self.fort_angle_input = int(response[3])
-                #print(response)
+                if len(response) != 6:
+                    continue
+                try:
+                    self.status = int(response[0])
+                    self.base_target_angle = float(response[1])
+                    self.fort_target_angle= float(response[3])
+                    print(response)
+                except:
+                    pass
 
 class Cannon(threading.Thread):
     bus = None

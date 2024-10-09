@@ -307,7 +307,7 @@ void loop() {
     controlMotorToAngle_BASE(BASE_filteredAngle, BASE_targetAngle);
     controlMotorToAngle_FORT(FORT_filteredAngle, FORT_targetAngle);
     last = now;
-    if (StatusCount>50){
+    if (StatusCount>60){
         printStatus();
         StatusCount=0;
     }
