@@ -19,6 +19,7 @@ class Arduino:
         self.open_serial_connection()
         self.recvThread = threading.Thread(target=self.recv)
         self.recvThread.daemon = True
+        self.recvFlag = True
         self.recvThread.start()
         
         self.base_target_angle = 0
@@ -27,7 +28,10 @@ class Arduino:
         self.fort_target_angle = 0
         self.fort_angle_input = 0
         self.status = 0
-
+    def close_serial_connection(self):
+        self.recvFlag = False
+        if self.serial is not None and self.serial.is_open:
+            self.serial.close()
     # Function to open/reopen the serial connection
     def open_serial_connection(self):
         while True:
@@ -89,7 +93,7 @@ class Arduino:
                 time.sleep(2)
 
     def recv(self):
-        while True:
+        while self.recvFlag:
             if self.serial.in_waiting:
                 response = self.serial.readline().decode('utf-8', errors='ignore').strip()
                 response = response.split(",")
@@ -154,9 +158,10 @@ class Cannon(threading.Thread):
                 self.arduino.set_target_angle("FORT", self.fort)
             if self.base != self.arduino.base_target_angle:
                 self.arduino.set_target_angle("BASE", self.base)
-            
-                
+
             self.rate.sleep()
+        self.arduino.close_serial_connection()
+        print("Shutting down")
 
 if __name__ == '__main__':
     try:
@@ -164,5 +169,4 @@ if __name__ == '__main__':
         Cannon.run()
         rospy.spin()
     except rospy.ROSInterruptException:
-        print("Shutting down")
         pass
