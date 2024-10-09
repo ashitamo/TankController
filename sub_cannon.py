@@ -1,8 +1,7 @@
 #! /usr/bin/python3
 
 import rospy
-from std_msgs.msg import String,Int8,Int16
-import can
+from std_msgs.msg import String
 import threading
 import serial
 import time
