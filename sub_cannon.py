@@ -30,8 +30,8 @@ class Arduino:
         self.status = 0
     def close_serial_connection(self):
         self.recvFlag = False
-        if self.serial is not None and self.serial.is_open:
-            self.serial.close()
+        self.serial.close()
+        print("Shutting down")
     # Function to open/reopen the serial connection
     def open_serial_connection(self):
         while True:
@@ -161,7 +161,7 @@ class Cannon(threading.Thread):
 
             self.rate.sleep()
         self.arduino.close_serial_connection()
-        print("Shutting down")
+        
 
 if __name__ == '__main__':
     try:
