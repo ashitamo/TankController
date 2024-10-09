@@ -150,8 +150,10 @@ class Cannon(threading.Thread):
 
             if self.fort != self.arduino.fort_target_angle:
                 self.arduino.set_target_angle("FORT", self.fort)
+                continue
             if self.base != self.arduino.base_target_angle:
                 self.arduino.set_target_angle("BASE", self.base)
+                continue
             
                 
             self.rate.sleep()
@@ -162,4 +164,5 @@ if __name__ == '__main__':
         Cannon.run()
         rospy.spin()
     except rospy.ROSInterruptException:
+        print("Shutting down")
         pass
