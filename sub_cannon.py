@@ -132,7 +132,7 @@ class Cannon(threading.Thread):
         if len(msg) == 2:
             self.base = int(msg[0])
             self.fort = int(msg[1])
-        elif msg == "launch":
+        elif data.data == "launch":
             if not self.launchQueue.full():
                 self.launchQueue.put(True)
         #rospy.loginfo(rospy.get_caller_id() + "stall %s",self._stall)
