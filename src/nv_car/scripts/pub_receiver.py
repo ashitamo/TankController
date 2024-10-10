@@ -163,6 +163,9 @@ class rosPublisher:
         cannon_cmd = ''
         if 'base' in data.keys() and 'fort' in data.keys():
             cannon_cmd = '{},{}'.format(data['base'],data['fort'])
+        if 'launch' in data.keys():
+            cannon_cmd = 'launch'
+
         data = {"throttle":throttle,"steer":steer,"stall":stall,'cannon': cannon_cmd}
         
 
