@@ -16,9 +16,9 @@ if __name__ == '__main__':
         print("type 'b' to reset base, 'f' to reset fort")
         command = input()
         if command == 'b':
-            command = "reset_base\n"
+            command = "reset_base"
         elif command == 'f':
-            command = "reset_fort\n"
+            command = "reset_fort"
         else:
             continue
         commandPublisher.publish(command)
