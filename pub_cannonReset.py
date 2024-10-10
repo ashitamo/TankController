@@ -10,6 +10,7 @@ from std_msgs.msg import String,Int8,Int16
 
 
 if __name__ == '__main__':
+    rospy.init_node('cannon_reset_node', anonymous=True)
     commandPublisher = rospy.Publisher("/cannon_reset",String,queue_size=10)
     while True:
         print("type 'b' to reset base, 'f' to reset fort")
