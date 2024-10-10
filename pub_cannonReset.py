@@ -20,6 +20,6 @@ if __name__ == '__main__':
         elif command == 'f':
             command = "reset_fort"
         else:
-            continue
+            break
         commandPublisher.publish(command)
        

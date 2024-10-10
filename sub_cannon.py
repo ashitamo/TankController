@@ -127,9 +127,9 @@ class Cannon(threading.Thread):
     def callback_reset(self,data):
         msg = data.data
         if msg == "reset_fort":
-            self.reset_ms_base = True
-        elif msg == "reset_base":
             self.reset_ms_fort = True
+        elif msg == "reset_base":
+            self.reset_ms_base = True
     def callback(self,data):
         msg = data.data.split(",")
         if len(msg) == 2:
