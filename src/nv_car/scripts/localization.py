@@ -6,6 +6,9 @@ from geometry_msgs.msg import PoseStamped
 from tf.transformations import euler_from_quaternion
 import sensor_msgs.point_cloud2 as pc2
 import math
+import numpy as np
+import time
+import matplotlib.pyplot as plt
 
 class LocalizationController:
     
@@ -39,23 +42,38 @@ class LocalizationController:
         self.yaw = yaw_rad / math.pi * 180.0
     # pointcloud map not used (using rviz)
     def pointcloud_callback(self, msg):
+            
+        resolution = 0.1
+        width = 500
+        height = 500
+        grid = np.zeros((height, width), dtype=np.int8)
+        expansion_radius = 1
+
         point_cloud = pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True)
+        
         # for i, point in enumerate(point_cloud):
-        #     x, y, z = point[:3] 
-        #     print(f"Point {i}: x={x}, y={y}, z={z}")
-        #     if i > 10:
-        #       break
-        self.map = point_cloud
+        #     x, y = point[0], point[1]
+        #     grid_x = int((x + width * resolution / 2) / resolution)
+        #     grid_y = int((y + height * resolution / 2) / resolution)
+
+        #     for i in range(-expansion_radius, expansion_radius + 1):
+        #         for j in range(-expansion_radius, expansion_radius + 1):
+        #             if 0 <= grid_x + i < width and 0 <= grid_y + j < height:
+        #                 grid[grid_y + j, grid_x + i] = 100
+        #     grid[int(self.x0) + 250, int(self.y0) + 250] = 100
+
+        # plt.matshow(grid)
+        # plt.show()
 
     def nav_tool_callback(self, msg):
         # nav tool fixed frame: map
         position = msg.pose.position
         self.goal = position # position.x position.y position.z
+        # send to PID control
+            
         print(f"Car pos: ({self.x0:.3f}, {self.y0:.3f}) Goal pos: ({self.goal.x:.3f}, {self.goal.y:.3f})")
         print(f"Distance: {self.calculate_error():.3f}")
         print(f"Angle: {self.calculate_angle():.3f}")
-
-        # send to PID control
 
     def calculate_error(self):
         x0, y0 = self.x0, self.y0
