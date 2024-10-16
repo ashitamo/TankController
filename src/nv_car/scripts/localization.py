@@ -15,6 +15,7 @@ class LocalizationController:
         self.y0 = None
         self.yaw = None
 
+        # not using map variable
         self.map = None
         self.goal = None
 
@@ -34,8 +35,9 @@ class LocalizationController:
 
         orientation = msg.pose.pose.orientation
         orientation_list = [orientation.x, orientation.y, orientation.z, orientation.w]
-        _, _, self.yaw = euler_from_quaternion(orientation_list)
-
+        _, _, yaw_rad = euler_from_quaternion(orientation_list)
+        self.yaw = yaw_rad / math.pi * 180.0
+    # pointcloud map not used (using rviz)
     def pointcloud_callback(self, msg):
         point_cloud = pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True)
         # for i, point in enumerate(point_cloud):
@@ -46,8 +48,14 @@ class LocalizationController:
         self.map = point_cloud
 
     def nav_tool_callback(self, msg):
+        # nav tool fixed frame: map
         position = msg.pose.position
         self.goal = position # position.x position.y position.z
+        print(f"Car pos: ({self.x0:.3f}, {self.y0:.3f}) Goal pos: ({self.goal.x:.3f}, {self.goal.y:.3f})")
+        print(f"Distance: {self.calculate_error():.3f}")
+        print(f"Angle: {self.calculate_angle():.3f}")
+
+        # send to PID control
 
     def calculate_error(self):
         x0, y0 = self.x0, self.y0
@@ -60,16 +68,15 @@ class LocalizationController:
         x1, y1 = self.goal.x, self.goal.y
 
         v = (x1 - x0, y1 - y0)
-        print(f"Vector: {v}")
 
-        # angle = math.acos(np.dot(v, frame_x)/np.linalg.norm(v)) / math.pi * 180
+        # angle of vector
+        angle_v = math.atan2(v[1], v[0]) / math.pi * 180
+        # yaw and goal are refered to map fixed frame 
+        angle_ya = self.yaw - angle_v
+        # angle between yaw and vector -pi ~ pi
+        angle_ya = angle_ya if angle_ya > -180.0 else angle_ya + 360.0
 
-        # if v[1] < 0:
-        #     angle = -angle
-
-        angle = math.atan2(v[1], v[0]) / math.pi * 180
-
-        return self.yaw - angle # negative angle --> destination at left / positive --> right
+        return angle_ya # negative angle --> goal at left / positive --> right
     
     def publish(self):
         pass
