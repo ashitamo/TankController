@@ -35,7 +35,7 @@ class LocalizationController:
         self.stall_pid = PID(0.1, 0, 0)
         self.steer_pid = PID(0.1, 0, 0)
 
-        self.stall_control = rospy.Publisher('/stall_pid_control', Float32, queue_size = 10)
+        self.throttle_control = rospy.Publisher('/throttle_pid_control', Float32, queue_size = 10)
         self.steer_control = rospy.Publisher('/steer_pid_control', Float32, queue_size = 10)
         
         self.rate = rospy.Rate(10)
@@ -59,7 +59,7 @@ class LocalizationController:
         expansion_radius = 1
 
         point_cloud = pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True)
-        
+
         # for i, point in enumerate(point_cloud):
         #     x, y = point[0], point[1]
         #     grid_x = int((x + width * resolution / 2) / resolution)
@@ -103,19 +103,16 @@ class LocalizationController:
         return angle_ya # negative angle --> goal at left / positive --> right
     
     def publish_control(self):
-        
+
         if self.goal is not None:
 
-            stall_v = self.stall_pid(self.calculate_error())
+            throttle_v = self.stall_pid(self.calculate_error())
             steer_v = self.steer_pid(self.calculate_angle())
 
-            self.stall_control.publish(stall_v)
+            self.throttle_control.publish(throttle_v)
             self.steer_control.publish(steer_v)
 
             self.rate.sleep()
-
-        
-
 
 if __name__ == '__main__':
     try:

@@ -8,7 +8,7 @@ import queue
 import rospy
 import math
 import random
-from std_msgs.msg import String,Int8,Int16
+from std_msgs.msg import String, Int8, Int16, Float32
 
 HOST = "10.147.18.60"
 #HOST = "192.168.0.157"
@@ -105,6 +105,17 @@ class rosPublisher:
         self.lastData = None
         self.count = 0
 
+        self.pid_throttle = None
+        self.pid_steer = None
+        rospy.Subscriber("/throttle_pid_control", Float32, self.throttle_pid_callback)
+        rospy.Subscriber("/steer_pid_control", Float32, self.steer_pid_callback)
+
+    def throttle_pid_callback(self, data):
+        self.pid_throttle = data
+
+    def steer_pid_callback(self, data):
+        self.pid_steer = data
+
     def attenuate(self,count):
         '''
             輸出資料格式
@@ -169,7 +180,7 @@ class rosPublisher:
         data = {"throttle":throttle,"steer":steer,"stall":stall,'cannon': cannon_cmd}
         
 
-        return data
+        return data # adding control mode status
     
     def publish(self,data):
         self.stallPublisher.publish(data["stall"])
@@ -183,13 +194,15 @@ if __name__ == "__main__":
     rospy.init_node('receiver_node', anonymous=True)
     rate = rospy.Rate(10)
     publisher = rosPublisher()
+    auto_control_mode = False
     while not rospy.is_shutdown():
         try:
-            data = receiver.rosQueue.get(block=False,timeout=0.1)
+            data = receiver.rosQueue.get(block=False,timeout=0.1) # controller data
         except queue.Empty:
             data = None
-        data = publisher.convert(data)
+        data = publisher.convert(data) # data , status
         print(data)
-        
+        if auto_control_mode == True:
+            pass # auto control mode data
         publisher.publish(data)
         rate.sleep()
