@@ -3,12 +3,14 @@ import rospy
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import PointCloud2
 from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import Float32
 from tf.transformations import euler_from_quaternion
 import sensor_msgs.point_cloud2 as pc2
 import math
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+from simple_pid import PID
 
 class LocalizationController:
     
@@ -29,8 +31,15 @@ class LocalizationController:
         rospy.Subscriber('/lio_sam/mapping/map_local', PointCloud2, self.pointcloud_callback)
         # get the /gaol topic from rviz 2D nav tool
         rospy.Subscriber('/goal', PoseStamped, self.nav_tool_callback)
+
+        self.stall_pid = PID(0.1, 0, 0)
+        self.steer_pid = PID(0.1, 0, 0)
+
+        self.stall_control = rospy.Publisher('/stall_pid_control', Float32, queue_size = 10)
+        self.steer_control = rospy.Publisher('/steer_pid_control', Float32, queue_size = 10)
         
-    
+        self.rate = rospy.Rate(10)
+
     def odometry_callback(self, msg):
         position = msg.pose.pose.position
         self.x0 = position.x
@@ -69,11 +78,8 @@ class LocalizationController:
         # nav tool fixed frame: map
         position = msg.pose.position
         self.goal = position # position.x position.y position.z
-        # send to PID control
-            
+        
         print(f"Car pos: ({self.x0:.3f}, {self.y0:.3f}) Goal pos: ({self.goal.x:.3f}, {self.goal.y:.3f})")
-        print(f"Distance: {self.calculate_error():.3f}")
-        print(f"Angle: {self.calculate_angle():.3f}")
 
     def calculate_error(self):
         x0, y0 = self.x0, self.y0
@@ -96,13 +102,26 @@ class LocalizationController:
 
         return angle_ya # negative angle --> goal at left / positive --> right
     
-    def publish(self):
-        pass
+    def publish_control(self):
+        
+        if self.goal is not None:
+
+            stall_v = self.stall_pid(self.calculate_error())
+            steer_v = self.steer_pid(self.calculate_angle())
+
+            self.stall_control.publish(stall_v)
+            self.steer_control.publish(steer_v)
+
+            self.rate.sleep()
+
+        
 
 
 if __name__ == '__main__':
     try:
         localization_controller = LocalizationController()
+        while not rospy.is_shutdown():
+            localization_controller.publish_control()
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
