@@ -32,8 +32,9 @@ class LocalizationController:
         # get the /gaol topic from rviz 2D nav tool
         rospy.Subscriber('/goal', PoseStamped, self.nav_tool_callback)
 
-        self.stall_pid = PID(0.1, 0, 0)
-        self.steer_pid = PID(0.1, 0, 0)
+        self.stall_pid = PID(-10, -0.05, 0.0, setpoint=0)
+
+        self.steer_pid = PID(5, 0.0, 0.0, setpoint=0)
 
         self.throttle_control = rospy.Publisher('/throttle_pid_control', Float32, queue_size = 10)
         self.steer_control = rospy.Publisher('/steer_pid_control', Float32, queue_size = 10)
@@ -103,9 +104,8 @@ class LocalizationController:
         return angle_ya # negative angle --> goal at left / positive --> right
     
     def publish_control(self):
-
+        
         if self.goal is not None:
-
             throttle_v = self.stall_pid(self.calculate_error())
             steer_v = self.steer_pid(self.calculate_angle())
 
@@ -113,6 +113,9 @@ class LocalizationController:
             self.steer_control.publish(steer_v)
 
             self.rate.sleep()
+            if self.calculate_error() <= 0.8:
+                print("reach goal")
+                self.goal = None
 
 if __name__ == '__main__':
     try:

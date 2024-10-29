@@ -51,18 +51,20 @@ class Receiver(threading.Thread):
 
     def recive(self):
         if self.totalCount> 100:
-            self.totalCount = self.totalCount % 50+1
-            self.failCount = self.failCount % 50
-        self.recvTimeoutDuration = 0.15 + (self.failCount/self.totalCount)*100 * 0.01
+            self.totalCount = 50
+            self.failCount = self.failCount % 25
+        self.recvTimeoutDuration = 0.15 + (self.failCount/self.totalCount)*100* 0.01
         #print(self.recvTimeoutDuration)
         if self.recvTimeoutDuration > 0.75:
             self.recvTimeoutDuration = 0.75
         elif self.recvTimeoutDuration < 0.15:
             self.recvTimeoutDuration = 0.15
-        self.socket.settimeout(self.recvTimeoutDuration)   
+        self.socket.settimeout(self.recvTimeoutDuration)  
+        #print(self.recvTimeoutDuration)
+
         try:
             self.totalCount+=1
-            data = self.socket.recv(65)
+            data = self.socket.recv(90)
         except TimeoutError:
             self.failCount+=1
             return None
@@ -111,10 +113,14 @@ class rosPublisher:
         rospy.Subscriber("/steer_pid_control", Float32, self.steer_pid_callback)
 
     def throttle_pid_callback(self, data):
-        self.pid_throttle = data
+        value = data.data
+        if value > 30:
+            value = 30
+        self.pid_throttle = int(value)
 
     def steer_pid_callback(self, data):
-        self.pid_steer = data
+        value = data.data
+        self.pid_steer = int(value) + 9000
 
     def attenuate(self,count):
         '''
@@ -129,11 +135,14 @@ class rosPublisher:
         attData = {"throttle":0,"steer":0,}
         if self.lastData is None:
             return attData
-        
+        attData = self.lastData
+        if count>=3:
+            attData['m'] = 1
+            attData['g'] = [None,None]
         steer = self.lastData["steer"]
-        steer = int((steer)*math.exp(-count/10))
+        steer = int((steer)*math.exp(-count/15))
         throttle = self.lastData["throttle"]
-        throttle = int((throttle)*math.exp(-count/5))
+        throttle = int((throttle)*math.exp(-count/8))
         # if self.lastData["throttle"] < 0:
         #     attData["throttle"] = -1
         attData["throttle"] = throttle
@@ -147,11 +156,19 @@ class rosPublisher:
             throttle: -1000~1000
             steer: -1000~1000
             stall: 1 2 4 8
+            base: -60~60
+            fort : -40~10
+            manual: 1 || 0
+            goal: [-100~100,-100~100] || [None,None](when not recv, the unit is %
 
             輸出資料格式
             throttle: 0~40(stall = 1) 0~60(stall = 2)
             steer: 1500~14500
             stall: 1 2 4 8
+            base: -60~60
+            fort : -40~10
+            manual: True || False
+            goal: [-100~100,-100~100] || [None,None](when not recv, the unit is %
         '''
         if data is None:
             data = self.attenuate(self.count)
@@ -176,9 +193,25 @@ class rosPublisher:
             cannon_cmd = '{},{}'.format(data['base'],data['fort'])
         if 'launch' in data.keys():
             cannon_cmd = 'launch'
-
-        data = {"throttle":throttle,"steer":steer,"stall":stall,'cannon': cannon_cmd}
-        
+        manual = True
+        if 'm' not in data.keys():#if controller is disconnect, disable autocontrol
+            manual= True
+            goal = [None,None]
+        else:
+            manual = True if data['m']== 1 else False
+            goal = data['g'] 
+        data = {
+            "throttle":throttle,
+            "steer":steer,
+            "stall":stall,
+            'cannon': cannon_cmd,
+            'manual':manual,
+            'goal':goal
+        }
+        if manual == False:
+            print("-----------")
+            data["throttle"] = self.pid_throttle
+            data["steer"] = self.pid_steer
 
         return data # adding control mode status
     
@@ -194,15 +227,12 @@ if __name__ == "__main__":
     rospy.init_node('receiver_node', anonymous=True)
     rate = rospy.Rate(10)
     publisher = rosPublisher()
-    auto_control_mode = False
     while not rospy.is_shutdown():
-        try:
-            data = receiver.rosQueue.get(block=False,timeout=0.1) # controller data
-        except queue.Empty:
+        if not receiver.rosQueue.empty():
+            data = receiver.rosQueue.get() # controller data
+        else:
             data = None
         data = publisher.convert(data) # data , status
         print(data)
-        if auto_control_mode == True:
-            pass # auto control mode data
         publisher.publish(data)
         rate.sleep()
