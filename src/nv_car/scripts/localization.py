@@ -32,6 +32,9 @@ class LocalizationController:
         # get the /gaol topic from rviz 2D nav tool
         rospy.Subscriber('/goal', PoseStamped, self.nav_tool_callback)
 
+        # sub controller data for choosing map goal
+
+
         self.stall_pid = PID(-10, -0.05, 0.0, setpoint=0)
 
         self.steer_pid = PID(5, 0.0, 0.0, setpoint=0)
@@ -61,16 +64,31 @@ class LocalizationController:
 
         point_cloud = pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True)
 
-        # for i, point in enumerate(point_cloud):
-        #     x, y = point[0], point[1]
-        #     grid_x = int((x + width * resolution / 2) / resolution)
-        #     grid_y = int((y + height * resolution / 2) / resolution)
+        for i, point in enumerate(point_cloud):
+            x, y = point[0], point[1]
+            grid_x = int((x + width * resolution / 2) / resolution)
+            grid_y = int((y + height * resolution / 2) / resolution)
 
-        #     for i in range(-expansion_radius, expansion_radius + 1):
-        #         for j in range(-expansion_radius, expansion_radius + 1):
-        #             if 0 <= grid_x + i < width and 0 <= grid_y + j < height:
-        #                 grid[grid_y + j, grid_x + i] = 100
-        #     grid[int(self.x0) + 250, int(self.y0) + 250] = 100
+            for i in range(-expansion_radius, expansion_radius + 1):
+                for j in range(-expansion_radius, expansion_radius + 1):
+                    if 0 <= grid_x + i < width and 0 <= grid_y + j < height:
+                        grid[grid_y + j, grid_x + i] = 100
+            grid[int(self.x0) + 250, int(self.y0) + 250] = 100
+
+        # convert controller goal to pointcloud position
+        # testing
+        if self.goal != None:
+            
+            test_x, test_y = self.goal.x, self.goal.y
+
+            grid_test_x = int((test_x + width * resolution / 2) / resolution)
+            grid_test_y = int((test_y + width * resolution / 2) / resolution)
+
+            grid_goal_x = int(grid_test_x)
+            grid_goal_y = int(grid_test_y)
+            converted_x = float(grid_goal_x * resolution - (width * resolution / 2))
+            converted_y = float(grid_goal_y * resolution - (width * resolution / 2))
+            print(f'({test_x:.3f}, {test_y:.3f}) ({converted_x:.3f}, {converted_y:.3f})')
 
         # plt.matshow(grid)
         # plt.show()
@@ -106,7 +124,6 @@ class LocalizationController:
     def publish_control(self):
         
         if self.goal == None:
-            print("set a new goal")
             self.throttle_control.publish(0)
             self.steer_control.publish(0)
 
@@ -120,6 +137,7 @@ class LocalizationController:
             self.rate.sleep()
             if self.calculate_error() <= 0.8:
                 print("reach goal")
+                print("set a new goal")
                 self.goal = None
 
 if __name__ == '__main__':
