@@ -209,7 +209,6 @@ class rosPublisher:
             'goal':goal
         }
         if manual == False:
-            print("-----------")
             data["throttle"] = self.pid_throttle
             data["steer"] = self.pid_steer
 

@@ -105,6 +105,11 @@ class LocalizationController:
     
     def publish_control(self):
         
+        if self.goal == None:
+            print("set a new goal")
+            self.throttle_control.publish(0)
+            self.steer_control.publish(0)
+
         if self.goal is not None:
             throttle_v = self.stall_pid(self.calculate_error())
             steer_v = self.steer_pid(self.calculate_angle())
