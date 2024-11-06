@@ -8,7 +8,7 @@ import queue
 import rospy
 import math
 import random
-from std_msgs.msg import String, Int8, Int16, Float32
+from std_msgs.msg import String, Int8, Int16, Float32, Int8MultiArray
 
 HOST = "10.147.18.60"
 HOST = "10.147.18.167" # Bacon Computer IP
@@ -105,6 +105,7 @@ class rosPublisher:
         self.throttlePublisher = rospy.Publisher("/throttle",Int8,queue_size=10)
         self.steerPublisher = rospy.Publisher("/steer",Int16,queue_size=10)
         self.cannonPublisher = rospy.Publisher("/cannon",String,queue_size=10)
+        self.goalPublisher = rospy.Publisher("/controller_goal", Int8MultiArray, queue_size=10)
         self.lastData = None
         self.count = 0
 
@@ -139,7 +140,7 @@ class rosPublisher:
         attData = self.lastData
         if count>=3:
             attData['m'] = 1
-            attData['g'] = [None,None]
+            attData['g'] = [0, 0]
         steer = self.lastData["steer"]
         steer = int((steer)*math.exp(-count/15))
         throttle = self.lastData["throttle"]
@@ -197,10 +198,10 @@ class rosPublisher:
         manual = True
         if 'm' not in data.keys():#if controller is disconnect, disable autocontrol
             manual= True
-            goal = [None,None]
+            goal = [0, 0]
         else:
             manual = True if data['m']== 1 else False
-            goal = data['g'] 
+            goal = data['g']
         data = {
             "throttle":throttle,
             "steer":steer,
@@ -220,6 +221,9 @@ class rosPublisher:
         self.throttlePublisher.publish(data["throttle"])
         self.steerPublisher.publish(data["steer"])
         self.cannonPublisher.publish(data['cannon'])
+        msg = Int8MultiArray()
+        msg.data = data["goal"]
+        self.goalPublisher.publish(msg)
     
 if __name__ == "__main__":
     receiver = Receiver()
