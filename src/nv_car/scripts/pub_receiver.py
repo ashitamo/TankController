@@ -11,6 +11,7 @@ import random
 from std_msgs.msg import String, Int8, Int16, Float32
 
 HOST = "10.147.18.60"
+HOST = "10.147.18.167" # Bacon Computer IP
 #HOST = "192.168.0.157"
 PORT = 65432
 
