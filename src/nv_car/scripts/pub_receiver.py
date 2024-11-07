@@ -200,7 +200,7 @@ class rosPublisher:
             manual= True
             goal = [0, 0]
         else:
-            manual = True if data['m']== 1 else False
+            manual = True if data['m'] == 1 else False
             goal = data['g']
         data = {
             "throttle":throttle,
@@ -221,6 +221,7 @@ class rosPublisher:
         self.throttlePublisher.publish(data["throttle"])
         self.steerPublisher.publish(data["steer"])
         self.cannonPublisher.publish(data['cannon'])
+
         msg = Int8MultiArray()
         msg.data = data["goal"]
         self.goalPublisher.publish(msg)

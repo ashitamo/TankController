@@ -58,8 +58,8 @@ class LocalizationController:
             
         # map parameter
         resolution = 0.1
-        width = 500
-        height = 500
+        width = 250
+        height = 250
         grid = np.zeros((height, width), dtype=np.int8) # numpy map
         expansion_radius = 1
 
@@ -74,22 +74,29 @@ class LocalizationController:
                 for j in range(-expansion_radius, expansion_radius + 1):
                     if 0 <= grid_x + i < width and 0 <= grid_y + j < height:
                         grid[grid_y + j, grid_x + i] = 100
-            grid[int(self.x0) + 250, int(self.y0) + 250] = 100
+                        # grid[grid_x + i, grid_y + j] = 100
 
         # convert controller goal to pointcloud map goal
         if self.controller_goal != None:
             
-            c_goal_x, c_goal_y = (self.controller_goal[0] + 250, self.controller_goal[1] + 250)
+            c_goal_x, c_goal_y = (-self.controller_goal[0] * 3 + width / 2, -self.controller_goal[1] * 3 + height / 2)
+            
             converted_x = float(c_goal_x * resolution - (width * resolution / 2))
-            converted_y = float(c_goal_y * resolution - (width * resolution / 2))
+            converted_y = float(c_goal_y * resolution - (height * resolution / 2))
 
             # map goal selected by controller
             if self.goal == None:
                 self.goal = PoseStamped().pose.position
-                self.goal.x = converted_x
-                self.goal.y = converted_y
 
-        # plt.matshow(grid)
+            self.goal.x = converted_x
+            self.goal.y = converted_y
+
+            for i in range(-expansion_radius, expansion_radius + 1):
+                for j in range(-expansion_radius, expansion_radius + 1):
+                    if 0 <= c_goal_x + i < width and 0 <= c_goal_y + j < height:
+                        grid[int(c_goal_y + j), int(c_goal_x + i)] = 90
+            print(f"Car pos: ({self.x0:.3f}, {self.y0:.3f}) Goal pos: ({self.goal.x:.3f}, {self.goal.y:.3f})")
+        # plt.matshow(np.fliplr(grid))
         # plt.show()
 
     def controller_goal_callback(self, msg):
