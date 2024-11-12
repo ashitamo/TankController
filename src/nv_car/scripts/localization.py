@@ -3,13 +3,14 @@ import rospy
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import PointCloud2
 from geometry_msgs.msg import PoseStamped
-from std_msgs.msg import Float32, Int8MultiArray
+from std_msgs.msg import Float32, Int8MultiArray, UInt8
+from rospy.numpy_msg import numpy_msg
 from tf.transformations import euler_from_quaternion
 import sensor_msgs.point_cloud2 as pc2
 import math
 import numpy as np
 import time
-import matplotlib.pyplot as plt
+import cv2
 from simple_pid import PID
 
 class LocalizationController:
@@ -42,6 +43,8 @@ class LocalizationController:
         self.throttle_control = rospy.Publisher('/throttle_pid_control', Float32, queue_size = 10)
         self.steer_control = rospy.Publisher('/steer_pid_control', Float32, queue_size = 10)
         
+        self.map_pub = rospy.Publisher('/numpy_map', numpy_msg(UInt8), queue_size=10)
+
         self.rate = rospy.Rate(10)
 
     def odometry_callback(self, msg):
@@ -58,9 +61,9 @@ class LocalizationController:
             
         # map parameter
         resolution = 0.1
-        width = 250
-        height = 250
-        grid = np.zeros((height, width), dtype=np.int8) # numpy map
+        width = 500
+        height = 500
+        grid = np.zeros((height, width, 3), dtype=np.uint8) # numpy map
         expansion_radius = 1
 
         point_cloud = pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True)
@@ -73,32 +76,40 @@ class LocalizationController:
             for i in range(-expansion_radius, expansion_radius + 1):
                 for j in range(-expansion_radius, expansion_radius + 1):
                     if 0 <= grid_x + i < width and 0 <= grid_y + j < height:
-                        grid[grid_y + j, grid_x + i] = 100
-                        # grid[grid_x + i, grid_y + j] = 100
+                        grid[grid_y + j, grid_x + i, 0] = 255
 
         # convert controller goal to pointcloud map goal
         if self.controller_goal != None:
             
             c_goal_x, c_goal_y = (-self.controller_goal[0] * 3 + width / 2, -self.controller_goal[1] * 3 + height / 2)
-            
+            car_x, car_y = (self.x0 + width / 2, self.y0 + height / 2)
+
             converted_x = float(c_goal_x * resolution - (width * resolution / 2))
             converted_y = float(c_goal_y * resolution - (height * resolution / 2))
 
             # map goal selected by controller
             if self.goal == None:
-                self.goal = PoseStamped().pose.position
+                self.goal = PoseStamped().pose.position 
 
             self.goal.x = converted_x
             self.goal.y = converted_y
 
+            car_x = int(car_x)
+            car_y = int(car_y)
+            c_goal_x = int(c_goal_x)
+            c_goal_y = int(c_goal_y)
             for i in range(-expansion_radius, expansion_radius + 1):
                 for j in range(-expansion_radius, expansion_radius + 1):
                     if 0 <= c_goal_x + i < width and 0 <= c_goal_y + j < height:
-                        grid[int(c_goal_y + j), int(c_goal_x + i)] = 90
-            print(f"Car pos: ({self.x0:.3f}, {self.y0:.3f}) Goal pos: ({self.goal.x:.3f}, {self.goal.y:.3f})")
-        # plt.matshow(np.fliplr(grid))
-        # plt.show()
+                        grid[(c_goal_y + j), (c_goal_x + i), 1] = 255
+                        grid[(car_y + j), (car_x + i), 2] = 255
+            # print(f"Car pos: ({self.x0:.3f}, {self.y0:.3f}) Goal pos: ({self.goal.x:.3f}, {self.goal.y:.3f})")
+            
+            grid = np.fliplr(grid)
 
+            self.map_pub.publish(grid)
+            cv2.imshow('map', grid)
+            cv2.waitKey(10)
     def controller_goal_callback(self, msg):
         self.controller_goal = msg.data
 
