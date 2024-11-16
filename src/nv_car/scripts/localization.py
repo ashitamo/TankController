@@ -36,9 +36,9 @@ class LocalizationController:
         # sub controller data for choosing map goal
         rospy.Subscriber('/controller_goal', Int8MultiArray, self.controller_goal_callback)
 
-        self.stall_pid = PID(-10, -0.05, 0.0, setpoint=0)
+        self.stall_pid = PID(-9, -0.05, -0.15, setpoint=0)
 
-        self.steer_pid = PID(5, 0.0, 0.0, setpoint=0)
+        self.steer_pid = PID(6, 0.0, 0.0, setpoint=0)
 
         self.throttle_control = rospy.Publisher('/throttle_pid_control', Float32, queue_size = 10)
         self.steer_control = rospy.Publisher('/steer_pid_control', Float32, queue_size = 10)
@@ -82,8 +82,8 @@ class LocalizationController:
         if self.controller_goal != None:
             
             c_goal_x, c_goal_y = (-self.controller_goal[0] * 3 + width / 2, -self.controller_goal[1] * 3 + height / 2)
-            car_x, car_y = (self.x0 + width / 2, self.y0 + height / 2)
-
+            car_x, car_y = ((self.x0 + width * resolution / 2) / resolution, (self.y0 + height * resolution / 2) / resolution)
+            
             converted_x = float(c_goal_x * resolution - (width * resolution / 2))
             converted_y = float(c_goal_y * resolution - (height * resolution / 2))
 
