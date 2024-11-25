@@ -6,12 +6,15 @@ import json
 import queue
 import random
 import can
-#import rospy
-#from std_msgs.msg import String,Int8,Int16
+import rospy
+from std_msgs.msg import String,Int8,Int16,UInt8
+from rospy.numpy_msg import numpy_msg
+import numpy as np
+import simplejpeg
 
 HOST = "127.0.0.1"
 HOST = "10.147.18.60"
-HOST = "192.168.0.157"
+#HOST = "192.168.0.157"
 #HOST = "10.22.233.150"
 PORT = 65434
 
@@ -53,7 +56,11 @@ class CarStateChecker_Recv(threading.Thread):
         self.daemon = True
         self.StateReader = CarStateReader()
         self.StateReader.start()
-    
+        rospy.Subscriber("/numpy_map", numpy_msg(UInt8), self.callback_map)
+        self.map = simplejpeg.encode_jpeg(np.zeros((500,500,3), dtype=np.uint8), colorspace='BGR')
+    def callback_map(self,data):
+        self.map = simplejpeg.encode_jpeg(data.data, colorspace='BGR')
+
     def initSocket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -99,6 +106,8 @@ class CarStateChecker_Recv(threading.Thread):
             # data["STEER"] = self.StateReader.STEER
             # data["STALL"] = self.StateReader.STALL
             data["SPEED"] = int(self.StateReader.SPEED//1000)
+            if 'map' in data:
+                data['map'] = self.map
         except json.decoder.JSONDecodeError:
             return None
         try:
@@ -123,6 +132,7 @@ class CarStateChecker_Recv(threading.Thread):
 
 
 if __name__ == "__main__":
+    rospy.init_node('carStateCheck_node', anonymous=True)
     checker = CarStateChecker_Recv()
     checker.start()
     while True:
