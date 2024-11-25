@@ -106,7 +106,7 @@ class CarStateChecker_Recv(threading.Thread):
             # data["STEER"] = self.StateReader.STEER
             # data["STALL"] = self.StateReader.STALL
             data["SPEED"] = int(self.StateReader.SPEED//1000)
-            if 'map' in data:
+            if 'map' in data.keys():
                 data['map'] = self.map
         except json.decoder.JSONDecodeError:
             return None
