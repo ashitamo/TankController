@@ -2,7 +2,7 @@
 import socket
 import threading
 import time
-import orjson
+import json
 import queue
 import random
 import can
@@ -57,9 +57,9 @@ class CarStateChecker_Recv(threading.Thread):
         self.StateReader = CarStateReader()
         self.StateReader.start()
         rospy.Subscriber("/numpy_map", numpy_msg(UInt8), self.callback_map)
-        self.map = simplejpeg.encode_jpeg(np.zeros((500,500,3), dtype=np.uint8), colorspace='bgr',colorsubsampling='411')
+        self.map = simplejpeg.encode_jpeg(np.zeros((500,500,3), dtype=np.uint8), colorspace='BGR')
     def callback_map(self,data):
-        self.map = simplejpeg.encode_jpeg(data.data, colorspace='BGR',colorsubsampling='411')
+        self.map = simplejpeg.encode_jpeg(data.data, colorspace='BGR')
 
     def initSocket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -86,7 +86,7 @@ class CarStateChecker_Recv(threading.Thread):
     def respond(self):
         self.socket.settimeout(0.15)
         try:
-            data = self.socket.recv(42)
+            data = self.socket.recv(29)
         except TimeoutError:
             return None
         except BaseException as e:
@@ -100,18 +100,18 @@ class CarStateChecker_Recv(threading.Thread):
             return None
         data = data.decode("utf-8")
         try:
-            data = orjson.loads(data)
+            data = json.loads(data)
             data["ESP_VOLT"] = int(self.StateReader.ESP_VOLT*100)
             # data["THROTTLE"] = self.StateReader.THROTTLE
             # data["STEER"] = self.StateReader.STEER
             # data["STALL"] = self.StateReader.STALL
             data["SPEED"] = int(self.StateReader.SPEED//1000)
-            if 'map' in data.keys():
-                data['map'] = str(self.map)
-        except orjson.JSONDecodeError:
+            # if 'map' in data:
+            #     data['map'] = self.map
+        except json.decoder.JSONDecodeError:
             return None
         try:
-            data = orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY).encode("utf-8")
+            data = json.dumps(data).encode("utf-8")
             print(len(data))
             self.socket.sendall(data)
         except TimeoutError:
