@@ -57,9 +57,9 @@ class CarStateChecker_Recv(threading.Thread):
         self.StateReader = CarStateReader()
         self.StateReader.start()
         rospy.Subscriber("/numpy_map", numpy_msg(UInt8), self.callback_map)
-        self.map = simplejpeg.encode_jpeg(np.zeros((500,500,3), dtype=np.uint8), colorspace='bgr',colorsubsampling='411').tostring()
+        self.map = simplejpeg.encode_jpeg(np.zeros((500,500,3), dtype=np.uint8), colorspace='bgr',colorsubsampling='411')
     def callback_map(self,data):
-        self.map = simplejpeg.encode_jpeg(data.data, colorspace='BGR')
+        self.map = simplejpeg.encode_jpeg(data.data, colorspace='BGR',colorsubsampling='411')
 
     def initSocket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -107,7 +107,7 @@ class CarStateChecker_Recv(threading.Thread):
             # data["STALL"] = self.StateReader.STALL
             data["SPEED"] = int(self.StateReader.SPEED//1000)
             if 'map' in data.keys():
-                data['map'] = self.map
+                data['map'] = str(self.map)
         except json.decoder.JSONDecodeError:
             return None
         try:
