@@ -2,7 +2,7 @@
 import socket
 import threading
 import time
-import json
+import orjson
 import queue
 import random
 import can
@@ -86,7 +86,7 @@ class CarStateChecker_Recv(threading.Thread):
     def respond(self):
         self.socket.settimeout(0.15)
         try:
-            data = self.socket.recv(29)
+            data = self.socket.recv(42)
         except TimeoutError:
             return None
         except BaseException as e:
@@ -100,7 +100,7 @@ class CarStateChecker_Recv(threading.Thread):
             return None
         data = data.decode("utf-8")
         try:
-            data = json.loads(data)
+            data = orjson.loads(data)
             data["ESP_VOLT"] = int(self.StateReader.ESP_VOLT*100)
             # data["THROTTLE"] = self.StateReader.THROTTLE
             # data["STEER"] = self.StateReader.STEER
@@ -108,10 +108,10 @@ class CarStateChecker_Recv(threading.Thread):
             data["SPEED"] = int(self.StateReader.SPEED//1000)
             if 'map' in data.keys():
                 data['map'] = str(self.map)
-        except json.decoder.JSONDecodeError:
+        except orjson.JSONDecodeError:
             return None
         try:
-            data = json.dumps(data).encode("utf-8")
+            data = orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY).encode("utf-8")
             print(len(data))
             self.socket.sendall(data)
         except TimeoutError:
