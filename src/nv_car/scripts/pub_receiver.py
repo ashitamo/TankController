@@ -11,7 +11,7 @@ import random
 from std_msgs.msg import String, Int8, Int16, Float32, Int8MultiArray
 
 HOST = "10.147.18.60"
-HOST = "10.147.18.167" # Bacon Computer IP
+# HOST = "10.147.18.167" # Bacon Computer IP
 #HOST = "192.168.0.157"
 PORT = 65432
 
@@ -196,7 +196,7 @@ class rosPublisher:
         if 'launch' in data.keys():
             cannon_cmd = 'launch'
         manual = True
-        if 'm' not in data.keys():#if controller is disconnect, disable autocontrol
+        if 'm' not in data.keys():# if controller is disconnect, disable autocontrol
             manual= True
             goal = [0, 0]
         else:
