@@ -56,10 +56,6 @@ class CarStateChecker_Recv(threading.Thread):
         self.daemon = True
         self.StateReader = CarStateReader()
         self.StateReader.start()
-        rospy.Subscriber("/numpy_map", numpy_msg(UInt8), self.callback_map)
-        self.map = simplejpeg.encode_jpeg(np.zeros((500,500,3), dtype=np.uint8), colorspace='BGR')
-    def callback_map(self,data):
-        self.map = simplejpeg.encode_jpeg(data.data, colorspace='BGR')
 
     def initSocket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -135,7 +131,5 @@ if __name__ == "__main__":
     rospy.init_node('carStateCheck_node', anonymous=True)
     checker = CarStateChecker_Recv()
     checker.start()
-    while True:
-        time.sleep(0.1)
-    
+    rospy.spin()
         
